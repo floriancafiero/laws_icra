@@ -10,17 +10,13 @@ Alternative:
 
 ## One-sentence thesis
 
-Regulating or designing *when robots must ask a human* is insufficient unless the detector, alert traffic, operator capacity, deadlines, and common-cause bursts jointly permit humans to act successfully in time.
+Regulating or designing *when robots must ask a human* is insufficient unless detector quality, alert traffic, operator capacity, deadlines, and common-cause bursts jointly permit humans to act successfully in time.
 
 ## 8-page narrative
 
 ### 1. Introduction
 
-Start with the apparently safe design rule:
-
-> escalate sensitive situations to a human.
-
-Show why it is incomplete. A formal right/opportunity to intervene can coexist with an operational inability to intervene.
+Start with the apparently safe rule: *escalate sensitive situations to a human*. Show why this is incomplete: a formal opportunity to intervene can coexist with operational inability to intervene.
 
 Contributions:
 
@@ -28,9 +24,9 @@ Contributions:
 2. analytical feasibility/capacity results;
 3. oversight paradox;
 4. rare-event false-positive scaling;
-5. proof that mean utilization cannot guarantee EHC under bursty arrivals;
+5. average-load insufficiency under bursty arrivals;
 6. empirically anchored rescue-robot simulation and, ideally, human-subject validation;
-7. performance-based certification formulation.
+7. measurable performance-based certification formulation.
 
 ### 2. Related work
 
@@ -45,25 +41,21 @@ Explicitly state what is **not** novel.
 
 ### 3. Model
 
-Define
+Define \(\Lambda,\pi,r,f,M,S,D,h,a\).
 
-[
-Lambda,pi,r,f,M,S,D,h,a.
-]
+Use the dimensionless formulation
 
-Use the dimensionless formulation:
-
-[
-A=Lambda E[S][pi r+(1-pi)f],
-qquad
-d=D/E[S].
-]
+$$
+A=\Lambda E[S][\pi r+(1-\pi)f],
+\qquad
+d=\frac{D}{E[S]}.
+$$
 
 Define
 
-[
-C=P(	ext{successful timely intervention}mid Z=1).
-]
+$$
+C=P(\text{successful timely intervention}\mid Z=1).
+$$
 
 ### 4. Theory
 
@@ -90,45 +82,39 @@ Show:
 
 ### 6. Simulation results
 
-Main figures should be rebuilt around dimensionless or empirically anchored axes:
+Rebuild main figures around dimensionless or empirically anchored axes:
 
-1. **Fan-out validation:** our stability boundary reproduces PFO.
-2. **EHC feasibility map:** (A) or candidate-event volume vs (M).
-3. **Oversight paradox:** sensitivity vs EHC along ROC curves at several capacities.
-4. **False-positive scaling:** operator requirement vs scale/FPR.
-5. **Burst result:** same mean load, different temporal correlation.
-6. **General-service robustness:** effect persists across service-time CV.
+1. fan-out validation;
+2. EHC feasibility map in \(A\) versus \(M\);
+3. oversight paradox along ROC curves at several capacities;
+4. false-positive scaling;
+5. same mean load, different temporal correlation;
+6. general-service robustness across service-time CV.
 
 ### 7. Human-subject validation / certification
 
-Preferred: include the 2x2 false-positive x burst human study.
+Preferred: include the 2 × 2 false-positive × burst human study.
 
-If data are not available in time, use this section for:
-
-- model validation against literature-scale simulations;
-- measurable certification protocol;
-- explicit limitations and preregistered future human validation.
+If data are unavailable in time, use this section for model validation, the measurable certification protocol, and explicit limitations/future human validation.
 
 ### 8. Discussion and conclusion
 
 Engineering conclusion first; policy implication second.
 
-Avoid claiming military organizations deliberately overload operators unless evidence is later found.
+Avoid claiming that organizations deliberately overload operators unless independent evidence is later found.
 
-The transferable conclusion is:
+Transferable conclusion:
 
 > A human-control requirement must constrain the performance of the entire escalation-and-supervision system, not merely mandate a human intervention channel.
 
 ## Reviewer-risk checklist
 
-Before submission:
-
-- do not oversell queueing novelty;
-- do not use hundreds-of-robots scenarios as "realistic current deployment";
-- distinguish candidate-event rate from alert rate;
-- report FPR denominator explicitly;
-- keep (h,a,pi) as sensitivity parameters unless directly measured;
-- include non-exponential service robustness;
-- include correlated arrivals;
-- give code and seeds;
-- explain why the result is a robotics/HRI design contribution rather than only governance theory.
+- Do not oversell queueing novelty.
+- Do not describe large-fleet stress tests as typical present deployments.
+- Distinguish candidate-event rate from alert rate.
+- Report the FPR denominator explicitly.
+- Keep \(h,a,\pi\) as sensitivity parameters unless directly measured.
+- Include non-exponential service robustness.
+- Include correlated arrivals.
+- Release code and seeds.
+- Explain why this is a robotics/HRI design and assurance contribution rather than only governance theory.
