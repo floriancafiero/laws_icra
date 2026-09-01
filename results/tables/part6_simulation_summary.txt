@@ -1,0 +1,41 @@
+PART 6 SIMULATION SUMMARY
+
+All parameter values are synthetic and used to test theoretical behavior, not to estimate a real deployment.
+
+Baseline Monte Carlo validation:
+ M   N  exact_EHC   MC_EHC
+ 4 100   0.958000 0.958250
+ 4 180   0.955582 0.955532
+ 6 250   0.957691 0.957525
+ 8 400   0.957290 0.957064
+
+Oversight paradox optimum:
+threshold       2.512500
+r               0.931559
+f               0.005994
+alert_rate    103.792798
+EHC             0.898363
+
+False-positive staffing examples (N=1000):
+FPR=0.10% -> M_min=6
+FPR=0.20% -> M_min=9
+FPR=0.50% -> M_min=17
+FPR=1.00% -> M_min=29
+FPR=2.00% -> M_min=54
+
+Burstiness:
+ batch_size  timely_mean  timely_sd
+          1     0.863516   0.002481
+          2     0.863560   0.000752
+          5     0.843852   0.001888
+         10     0.726444   0.003855
+         20     0.432696   0.005805
+         50     0.169888   0.002919
+        100     0.083436   0.003428
+
+Scheduling:
+           policy  critical_timely_mean  critical_timely_sd  urgent_critical_mean  overall_timely_mean
+             FIFO              0.585214            0.018845              0.254372             0.722533
+Earliest deadline              0.639522            0.044315              0.491766             0.702139
+       Risk first              0.816037            0.004917              0.598973             0.807572
+    Risk/deadline              0.819491            0.007818              0.605503             0.815394
