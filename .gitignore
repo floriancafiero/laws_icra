@@ -3,3 +3,7 @@ __pycache__/
 *.pyc
 .DS_Store
 .ipynb_checkpoints/
+
+# Human-subject pilot data
+pilot/data/*.csv
+pilot/pilot_summary.csv

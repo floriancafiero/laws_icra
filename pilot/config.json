@@ -1,0 +1,18 @@
+{
+  "main": {
+    "duration_s": 480.0,
+    "critical_count": 6,
+    "low_nuisance_count": 6,
+    "high_nuisance_count": 18,
+    "critical_deadline_s": 90.0,
+    "nuisance_deadline_s": 120.0
+  },
+  "demo": {
+    "duration_s": 90.0,
+    "critical_count": 3,
+    "low_nuisance_count": 3,
+    "high_nuisance_count": 7,
+    "critical_deadline_s": 20.0,
+    "nuisance_deadline_s": 25.0
+  }
+}

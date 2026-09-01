@@ -38,7 +38,7 @@ where:
 
 ## Primary robotics scenario
 
-The paper now uses **variable-autonomy multi-robot firefighting/search-and-rescue** as its neutral engineering scenario. This closely matches recent meaningful-human-control and multi-robot alert studies, while keeping large-fleet analyses explicitly labeled as scaling stress tests.
+The paper uses **variable-autonomy multi-robot firefighting/search-and-rescue** as its neutral engineering scenario. This closely matches recent meaningful-human-control and multi-robot alert studies, while keeping large-fleet analyses explicitly labeled as scaling stress tests.
 
 See `SCENARIO.md`.
 
@@ -49,6 +49,7 @@ See `SCENARIO.md`.
 - `CERTIFICATION.md` — proposed measurable performance-based EHC certificate.
 - `EXPERIMENT.md` — human-subject validation design.
 - `PAPER_PLAN.md` — ICRA narrative and figure plan.
+- `pilot/` — runnable local pilot experiment, validation checks, and pilot analysis.
 - `notes/literature_gap.md` — novelty boundaries.
 - `notes/empirical_calibration.md` — empirical anchors and non-identifiable parameters.
 - `notes/dimensionless_formulation.md` — scale-free workload/deadline formulation.
@@ -57,11 +58,11 @@ See `SCENARIO.md`.
 - `src/firefighting_scenario.py` — general-service scaling stress test.
 - `src/certification.py` — exact binomial lower-bound/sample-size utilities.
 
-## Reproduce
+## Reproduce theory/simulation results
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate   # Windows: .venv\\Scripts\\activate
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 python src/simulations.py
 python src/calibrated_scenarios.py
@@ -69,13 +70,27 @@ python src/firefighting_scenario.py
 python src/certification.py
 ```
 
+## Run the human pilot prototype
+
+```bash
+python pilot/validate.py
+python -m unittest tests/test_pilot_logic.py
+python pilot/app.py
+```
+
+Then open `http://127.0.0.1:5000`.
+
+The pilot is a counterbalanced 2 × 2 within-subject manipulation of nuisance-alert burden and temporal clustering. It logs correctness, timeliness, response latency, and queue depth while keeping genuine critical-event detector sensitivity fixed at 1 in order to isolate human-capacity effects.
+
+See `pilot/README.md` before using the system with participants.
+
+## Empirical status
+
 The original baseline uses **synthetic** parameters to test qualitative/theoretical behavior. Empirical anchors, cross-domain robustness anchors, and scenario parameters are labeled separately; none are presented as estimates of an autonomous-weapons deployment.
 
-## Current empirical status
+Recent HRI evidence is concentrated at small team sizes, and the model recovers the classic fan-out boundary as a special case. Large-fleet analyses ask a scaling question: what warning quality and human capacity are required to preserve EHC as autonomous systems become more numerous?
 
-Recent HRI evidence is concentrated at small team sizes, and the model recovers the classic fan-out boundary as a special case. The large-fleet analyses ask a scaling question: what warning quality and human capacity would be required to preserve EHC as autonomous systems become more numerous?
-
-The main presentation should now use dimensionless offered load
+The main presentation uses dimensionless offered load
 
 \[
 A=\Lambda E[S][\pi r+(1-\pi)f]
@@ -89,6 +104,6 @@ d=D/E[S],
 
 with non-exponential service-time and burst robustness in simulation.
 
-## Immediate research priority
+## Current critical path
 
-The highest-value remaining empirical step is the human-subject experiment in `EXPERIMENT.md`: manipulate false-positive burden and temporal burstiness while holding true critical events approximately fixed, then test whether end-to-end EHC falls as predicted.
+The next empirical step is a **small researcher/convenience pilot** using `pilot/app.py`. The purpose is to estimate the actual service-time distribution, check for ceiling/floor effects, verify that the false-positive and burst manipulations change queue pressure as intended, and obtain effect-size estimates for the preregistered main human study.
