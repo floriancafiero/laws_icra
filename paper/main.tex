@@ -23,7 +23,7 @@ Capacity-Aware Effective Human Control for Supervisory Multi-Robot Systems
 \pagestyle{empty}
 
 \begin{abstract}
-Human-in-the-loop architectures are often treated as if providing an intervention channel were sufficient to preserve human control. This paper shows that such a guarantee is inherently system-level: escalation quality, event base rates, finite supervisory capacity, human processing time, intervention deadlines, and correlated demand jointly determine whether intervention remains practically available. We define effective human control (EHC) as the probability that an oversight-critical event is escalated, reviewed correctly, and acted upon before its deadline. An analytically tractable multi-server baseline yields a deadline-aware control capacity and four consequences. First, some targets are infeasible regardless of staffing because human service time itself imposes a hard ceiling. Second, increasing escalation sensitivity can reduce EHC when additional false alerts create sufficient congestion. Third, in rare-event regimes any fixed nonzero false-positive rate induces a first-order staffing requirement linear in fleet scale. Fourth, average utilization cannot guarantee EHC under synchronized alert bursts. The framework recovers classical fan-out as a special stability case. Dimensionless simulations with non-Poisson arrivals and non-exponential service distributions show that the main effects persist beyond the analytical assumptions.
+Human-in-the-loop architectures are often treated as if providing an intervention channel were sufficient to preserve human control. This paper shows that such a guarantee is inherently system-level: escalation quality, event base rates, finite supervisory capacity, human processing time, intervention deadlines, and correlated demand jointly determine whether intervention remains practically available. We define effective human control (EHC) as the probability that an oversight-critical event is escalated, reviewed correctly, and acted upon before its deadline. An analytically tractable multi-server baseline yields a deadline-aware control capacity and four consequences. First, some targets are infeasible regardless of staffing because human service time itself imposes a hard ceiling. Second, increasing escalation sensitivity can reduce EHC when additional false alerts create sufficient congestion. Third, in rare-event regimes any fixed nonzero false-positive rate induces a first-order staffing requirement linear in fleet scale. Fourth, average utilization cannot guarantee EHC under synchronized alert bursts. The framework contains the classical fan-out capacity formula as an open-request limiting case. Dimensionless simulations with non-Poisson arrivals and non-exponential service distributions show that the main effects persist beyond the analytical assumptions.
 \end{abstract}
 
 \section{Introduction}
@@ -201,11 +201,11 @@ We evaluate structural claims rather than fit a single deployment-specific param
 
 \subsection{Classical fan-out as a special case}
 
-If each robot generates one request per \(RST+IT\) cycle, then \(\lambda_{\rm req}=1/(RST+IT)\) and \(\mu=1/IT\). The one-operator stability boundary becomes
+For comparison with potential fan-out, suppose each robot contributes a long-run request rate \(\lambda_{\rm req}=1/(RST+IT)\) and one operator services requests at \(\mu=1/IT\). Under the corresponding open-request approximation, \(N\lambda_{\rm req}<\mu\) rearranges to
 \begin{equation}
 N<\frac{RST}{IT}+1=PFO.
 \end{equation}
-Using the mean values reported by Perkins et al. \cite{perkins2025fanout}, this gives potential fan-out values 6.13 and 3.48 for their high- and low-self-sufficiency conditions, exactly matching the queue stability boundary. This identity validates the capacity layer of our formulation; the additional EHC constraint imposes a deadline-aware service level rather than mere stability.
+Using the mean values reported by Perkins et al. \cite{perkins2025fanout} gives 6.13 and 3.48 for their high- and low-self-sufficiency conditions. This is an algebraic consistency check, not a claim that classical fan-out itself assumes an open M/M/1 queue; finite-source pooled models have also been studied explicitly \cite{bush2015suave}. EHC adds referral errors and a deadline-aware completion requirement to this capacity layer.
 
 \subsection{Deadline-aware feasibility}
 
