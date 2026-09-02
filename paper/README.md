@@ -32,3 +32,8 @@ The manuscript must be self-contained. Do not write â€œsee supplementary proofâ€
 ## Optional video
 
 The call allows a video up to 180 seconds / 20 MB with the initial submission. Only produce one if the manuscript is already stable and the video can visually explain common-cause burst overload or the feasibility frontier.
+
+
+## AI-use disclosure
+
+ICRA 2027 explicitly requires disclosure when generative AI is used to create manuscript content, figures, images, or code. Because this project used ChatGPT for prose drafting, literature-search organization, and code drafting, `main.tex` contains a compact anonymized disclosure. Before submission, the authors must verify that the disclosure accurately describes the final workflow and personally verify all mathematical claims, citations, code, and numerical results.
