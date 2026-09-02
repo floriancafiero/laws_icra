@@ -1,0 +1,33 @@
+name: ICRA evaluation
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test-and-evaluate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Theory sanity checks
+        run: python -m unittest tests/test_theory.py
+
+      - name: Generate ICRA evaluation
+        run: python src/icra_evaluation.py
+
+      - name: Upload generated evaluation
+        uses: actions/upload-artifact@v4
+        with:
+          name: icra-evaluation
+          path: |
+            results/figures/icra/
+            results/tables/icra/
