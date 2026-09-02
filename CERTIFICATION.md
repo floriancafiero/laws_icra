@@ -41,13 +41,13 @@ Changing fleet size, alert threshold, operator staffing, or material interface b
 On a labeled scenario corpus representative of the ODD, estimate
 
 $$
-r=P(A=1\mid Z=1)
+r=P(R=1\mid Z=1)
 $$
 
 and
 
 $$
-f=P(A=1\mid Z=0).
+f=P(R=1\mid Z=0).
 $$
 
 Also report prevalence \(\pi\), because predictive value and workload depend on base rate. “False alarm rate” is unacceptable unless the denominator is explicitly defined.
