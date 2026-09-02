@@ -332,97 +332,207 @@ $$
 
 Near saturation, \(\mu-\nu\downarrow0\), the congestion penalty becomes increasingly severe.
 
-## Theorem 4 — Rare-event false-positive staffing law
+## Theorem 4 — Constant safety margin and rare-event scaling
 
-Consider a sequence of fleets \(N\to\infty\) with
-
-$$
-\pi_N\to0,
-$$
-
-while \(\lambda,\mu,D,r,f,h,a\) remain fixed and \(f>0\). Assume
+Fix normalized deadline \(d>0\) and target
 
 $$
-0<C_{\min}<rha(1-e^{-\mu D}).
+q^*=\frac{C_{\min}}{rha}\in(0,1-e^{-d}).
 $$
 
-Let \(M_{\min}(N)\) be the minimum number of pooled operators satisfying the EHC target.
+For any sequence \(A_n\to\infty\), \(M_n>A_n\), with
 
-Then
+$$
+M_n-A_n\to c\in(0,\infty),
+$$
+
+Erlang-C waiting probability tends to one and
 
 $$
 \boxed{
-\lim_{N\to\infty}
-\frac{M_{\min}(N)}{N}
+Q_{M_n}(A_n,d)\to H_c(d),
+}
+$$
+
+where \(H_c\) is the completion probability for the sum of independent
+\(\mathrm{Exp}(c)\) waiting and \(\mathrm{Exp}(1)\) service times.
+
+The function \(H_c(d)\) is continuous and strictly increasing in \(c\), from
+zero to \(1-e^{-d}\). Hence there is a unique
+
+$$
+c^*=c^*(d,q^*)
+$$
+
+such that
+
+$$
+H_{c^*}(d)=q^*.
+$$
+
+The minimum integer staffing therefore obeys
+
+$$
+\boxed{
+M_{\min}(A)=\left\lceil A+c^*+o(1)\right\rceil.
+}
+$$
+
+For \(d=4\) and \(q^*=0.95\),
+
+$$
+c^*\approx1.4997568.
+$$
+
+For the fleet,
+
+$$
+A_N=N\ell[\pi_Nr+(1-\pi_N)f],
+\qquad
+\ell=\lambda/\mu.
+$$
+
+If \(\pi_N\to0\) and \(f>0\) is fixed,
+
+$$
+\boxed{
+\lim_{N\to\infty}\frac{M_{\min}(N)}N=\ell f.
+}
+$$
+
+If additionally \(\pi_N=O(1/N)\), the stronger result is
+
+$$
+\boxed{
+M_{\min}(N)=N\ell f+O(1).
+}
+$$
+
+A bounded operator pool can remain feasible only if
+
+$$
+\pi_Nr+(1-\pi_N)f_N=O(1/N);
+$$
+
+when \(\pi_N=O(1/N)\), this forces \(f_N=O(1/N)\).
+
+## Theorem 5 — Distribution-free burst impossibility
+
+Let service times be iid, strictly positive and nonexplosive, with renewal
+function
+
+$$
+U_S(D)
 =
-\frac{\lambda f}{\mu}.
-}
+\sum_{k\ge1}P(S_1+\cdots+S_k\le D)
+<\infty.
 $$
 
-Thus any fixed nonzero FPR creates a first-order linear staffing requirement in the rare-event regime.
+For a simultaneous batch of \(b\) exchangeable alerts arriving to \(M\)
+initially idle servers, let \(K_D\) be the number completed by \(D\). Continuous
+busy service dominates the actual system, so
 
-More generally, a fixed operator pool can remain feasible as \(N\to\infty\) only if
+$$
+E[K_D]\le M U_S(D).
+$$
+
+For a uniformly selected alert \(J\),
 
 $$
 \boxed{
-\pi_Nr+(1-\pi_N)f_N=O(1/N).
-}
-$$
-
-If additionally \(\pi_N=O(1/N)\), this requires
-
-$$
-f_N=O(1/N).
-$$
-
-## Theorem 5 — Average-load insufficiency under synchronized demand
-
-Consider a batch of \(b\) exchangeable alerts arriving simultaneously to \(M\) initially idle exponential servers of rate \(\mu\), with no later arrivals. Let \(K_D\) be the number completed by deadline \(D\).
-
-Even under this favorable initial condition,
-
-$$
-E[K_D]\le M\mu D.
-$$
-
-For a uniformly selected alert \(J\) from the batch,
-
-$$
 P(T_J\le D)
-=
-\frac{E[K_D]}{b}
 \le
-\boxed{
-\min\left(1,\frac{M\mu D}{b}\right).
+\min\left(1,\frac{M U_S(D)}b\right).
 }
 $$
 
-Now let fixed-size batches \(b\) arrive as a Poisson process of rate
+Now let batches of size \(b\) arrive as a Poisson process with rate
+\(\beta_b=\bar\nu/b\). The mean alert rate is always \(\bar\nu\), and nominal
+utilization is always
 
 $$
-\beta_b=\frac{\bar\nu}{b}.
+\rho=\frac{\bar\nu E[S]}M.
 $$
 
-Every such system has the same average alert rate \(\bar\nu\) and the same nominal utilization
+Yet the bound tends to zero as \(b\to\infty\). Therefore average utilization
+alone cannot certify any positive uniform deadline-completion probability under
+synchronized demand.
+
+For exponential service,
 
 $$
-\bar\rho=\frac{\bar\nu}{M\mu}.
+U_S(D)=\mu D,
 $$
 
-Yet conditional timely completion for an alert in a burst satisfies
+recovering the simpler \(M\mu D/b\) bound.
+
+## Proposition — Uncertainty-aware feasibility certificate
+
+Expose the service-rate dependence as \(Q_M(\nu,D;\mu)\). Suppose
+
+$$
+\lambda\in[\lambda^-,\lambda^+],\quad
+\pi\in[\pi^-,\pi^+],\quad
+r\in[r^-,r^+],\quad
+f\in[f^-,f^+],
+$$
+
+$$
+\mu\in[\mu^-,\mu^+],\quad
+D\in[D^-,D^+],\quad
+h\ge h^-,\quad
+a\ge a^-,
+$$
+
+with \(r^-\ge f^+\). Monotonicity gives the conservative certificate
 
 $$
 \boxed{
-P(T_J\le D)\to0
-\qquad(b\to\infty),
+C_{\rm cert}
+=
+h^-a^-
+\min_{r\in[r^-,r^+]}
+rQ_M\!\left(
+N\lambda^+[\pi^+r+(1-\pi^+)f^+],
+D^-;\mu^-
+\right).
 }
 $$
 
-even for any fixed \(\bar\rho<1\).
+If
 
-Therefore average utilization alone cannot certify deadline-constrained effective human control.
+$$
+C_{\rm cert}\ge C_{\min},
+$$
 
-The exchangeability qualification matters: a strict priority policy can protect a designated critical alert at the expense of others. This motivates priority scheduling as a mitigation, not as a contradiction of the result.
+then every parameter vector in the uncertainty set is feasible. The only
+remaining minimization is over referral sensitivity \(r\), because the
+Oversight Paradox prevents treating that parameter as monotone.
+
+## Corollary — Finite-source conservatism
+
+If each robot's rate-\(\lambda\) candidate clock is suppressed while that robot
+has an outstanding referred alert, couple the finite-source and open systems
+using identical candidate clocks, marks, and service requirements.
+
+Every finite-source arrival also appears in the open system; the open system may
+contain additional jobs but never fewer. Hence for every shared alert under
+FCFS,
+
+$$
+T_{\rm finite}\le T_{\rm open}
+$$
+
+sample-path-wise, and therefore
+
+$$
+\boxed{
+Q_M^{\rm finite}(D)\ge Q_M^{\rm open}(D).
+}
+$$
+
+The open-Poisson baseline is conservative for this common finite-source
+mechanism.
 
 ---
 
