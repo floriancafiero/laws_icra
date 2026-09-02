@@ -35,7 +35,7 @@ We therefore treat human control as an end-to-end performance property. Let \(Z=
 C=P(\text{successful timely human intervention}\mid Z=1),
 \label{eq:ehc}
 \end{equation}
-and ask when a supervisory architecture can guarantee \(C\ge C_{\min}\).
+and ask when a supervisory architecture can guarantee \(C\ge C_{\min}\), where \(C_{\min}\in(0,1)\) is the required EHC target.
 
 We connect referral reliability, base rates, finite human capacity, and deadlines in one guarantee. This yields four system-level results:
 \begin{enumerate}
@@ -360,8 +360,10 @@ $M_n-A_n\to c\in(0,\infty)$. Then
 where $H_c$ is given by \eqref{eq:hdelta}--\eqref{eq:hdelta-one} with
 $\delta=c$. Moreover $H_c(d)$ is continuous
 and strictly increasing in $c$, from $0$ to $1-e^{-d}$, so there is a unique
-$c^*=c^*(d,q^*)$ satisfying $H_{c^*}(d)=q^*$. Consequently, if
-$M_{\min}(A)$ is the minimum integer staffing meeting the target,
+$c^*=c^*(d,q^*)$ satisfying $H_{c^*}(d)=q^*$. Thus $c^*$ is the asymptotic
+spare capacity, measured in supervisor-equivalents, required by the deadline
+and target. Consequently, if $M_{\min}(A)$ is the minimum integer staffing
+meeting the target,
 \begin{equation}
 M_{\min}(A)=\left\lceil A+c^*+o(1)\right\rceil.
 \label{eq:safety-margin}
@@ -371,14 +373,17 @@ $X_n\sim\mathrm{Pois}(A_n)$. Erlang-C can be rewritten as
 $p_W^{-1}=1+(c_n/M_n)P(X_n\le M_n-1)/P(X_n=M_n)$. The Poisson central and
 local limit estimates make the added term $O(A_n^{-1/2})$, so $p_W\to1$;
 conditional waiting remains exponential with rate $c_n\to c$, hence
-$\widetilde Q_{M_n}\to H_c$. These Poisson approximations are locally uniform
+$\widetilde Q_{M_n}\to H_c$. Thus almost every alert may wait asymptotically
+($p_W\to1$) without the deadline-completion probability vanishing, because
+the waiting-time scale remains finite. These Poisson approximations are locally uniform
 for bounded positive $c$, so the finite-load threshold in spare capacity is
 $c^*+o(1)$; integer rounding gives \eqref{eq:safety-margin}. Strict monotonicity
 of $H_c$ follows by stochastic ordering of $\mathrm{Exp}(c)$.
 
 For a fleet,
 $A_N=N\ell[\pi_Nr+(1-\pi_N)f]$, where
-$\ell=\lambda E[S]=\lambda/\mu$. If $\pi_N\to0$ and fixed $f>0$,
+$\ell=\lambda E[S]=\lambda/\mu$ is the per-agent candidate load in units of
+mean human service time. If $\pi_N\to0$ and fixed $f>0$,
 \eqref{eq:safety-margin} immediately yields the first-order law
 \begin{equation}
 \lim_{N\to\infty}\frac{M_{\min}(N)}{N}=\ell f.
@@ -391,7 +396,7 @@ $\pi_Nr+(1-\pi_N)f_N=O(N^{-1})$; when $\pi_N=O(N^{-1})$, necessarily
 $f_N=O(N^{-1})$.
 
 \textbf{Theorem 4 (general-service burst impossibility).}
-Let service requirements be iid, independent of scheduling decisions, with
+Let service requirements be iid and independent of the information used for scheduling, with
 $0<E[S]<\infty$, and let $S_1,S_2,\ldots$ be iid copies of $S$. Define the
 finite renewal function
 \begin{equation}
@@ -410,8 +415,9 @@ P(T_J\le D)=\frac{E[K_D]}{b}
 \label{eq:burst-bound}
 \end{equation}
 Now let batches of size $b$ arrive as a Poisson process of rate
-$\beta_b=\bar\nu/b$. Every system has the same mean alert rate $\bar\nu$ and
-the same nominal utilization $\bar\nu E[S]/M$, while the bound in
+$\beta_b=\bar\nu/b$, choosing $\bar\nu$ so that the common nominal utilization
+$\rho=\bar\nu E[S]/M<1$. Every system then has the same mean alert rate
+$\bar\nu$ and the same subcritical utilization $\rho$, while the bound in
 \eqref{eq:burst-bound} tends to zero as $b\to\infty$; residual backlog can
 only worsen it. Thus average utilization alone provides no positive uniform
 lower bound on deadline completion under synchronized demand. For exponential
