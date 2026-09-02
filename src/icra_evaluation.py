@@ -291,21 +291,25 @@ def simulate_queue(
     *,
     service_cv=1.0,
     n=50000,
+    warmup=5000,
     seed=1,
 ):
+    """Stationary-like FCFS simulation after discarding a warm-up period."""
     rng = np.random.default_rng(seed)
-    arrivals = generate_arrivals(process, A, n, rng)
-    services = sample_service(service_dist, n, rng, service_cv)
+    total = n + warmup
+    arrivals = generate_arrivals(process, A, total, rng)
+    services = sample_service(service_dist, total, rng, service_cv)
     servers = [0.0] * M
     heapq.heapify(servers)
     successes = 0
 
-    for arrival, service in zip(arrivals, services):
+    for idx, (arrival, service) in enumerate(zip(arrivals, services)):
         available = heapq.heappop(servers)
         start = max(arrival, available)
         finish = start + service
         heapq.heappush(servers, finish)
-        successes += finish - arrival <= d
+        if idx >= warmup:
+            successes += finish - arrival <= d
 
     return successes / n
 
