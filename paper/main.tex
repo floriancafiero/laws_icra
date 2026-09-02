@@ -12,7 +12,7 @@
 
 \title{\LARGE \bf
 When Can Humans Really Intervene?\\
-Capacity-Aware Effective Human Control for Supervisory Multi-Robot Systems
+End-to-End Capacity Guarantees for Supervisory Multi-Robot Systems
 }
 
 \author{Anonymous Authors}
@@ -23,7 +23,7 @@ Capacity-Aware Effective Human Control for Supervisory Multi-Robot Systems
 \pagestyle{empty}
 
 \begin{abstract}
-Human-in-the-loop architectures are often treated as if providing an intervention channel were sufficient to preserve human control. This paper shows that such a guarantee is inherently system-level: escalation quality, event base rates, finite supervisory capacity, human processing time, intervention deadlines, and correlated demand jointly determine whether intervention remains practically available. We define effective human control (EHC) as the probability that an oversight-critical event is escalated, reviewed correctly, and acted upon before its deadline. An analytically tractable multi-server baseline yields a deadline-aware control capacity and four consequences. First, some targets are infeasible regardless of staffing because human service time itself imposes a hard ceiling. Second, increasing escalation sensitivity can reduce EHC when additional false alerts create sufficient congestion. Third, in rare-event regimes any fixed nonzero false-positive rate induces a first-order staffing requirement linear in fleet scale. Fourth, average utilization cannot guarantee EHC under synchronized alert bursts. The framework contains the classical fan-out capacity formula as an open-request limiting case. Dimensionless simulations with non-Poisson arrivals and non-exponential service distributions show that the main effects persist beyond the analytical assumptions.
+Human-in-the-loop architectures are often treated as if providing an intervention channel were sufficient to preserve human control. This paper shows that such a guarantee is inherently system-level: escalation quality, event base rates, finite supervisory capacity, human processing time, intervention deadlines, and correlated demand jointly determine whether intervention remains practically available. We define effective human control (EHC) as the probability that an oversight-critical event is escalated, reviewed correctly, and acted upon before its deadline. An analytically tractable multi-server baseline defines a human-control feasibility frontier over fleet scale, referral policy, staffing, and deadline, with four consequences. First, some targets are infeasible regardless of staffing because human service time itself imposes a hard ceiling. Second, increasing escalation sensitivity can reduce EHC when additional false alerts create sufficient congestion. Third, in rare-event regimes any fixed nonzero false-positive rate induces a first-order staffing requirement linear in fleet scale. Fourth, average utilization cannot guarantee EHC under synchronized alert bursts. The framework contains the classical fan-out capacity formula as an open-request limiting case. Dimensionless simulations with non-Poisson arrivals and non-exponential service distributions show that the main effects persist beyond the analytical assumptions.
 \end{abstract}
 
 \section{Introduction}
@@ -60,7 +60,7 @@ We reproduce the classical potential-fan-out formula under an open-request appro
 Human--multi-robot supervision has long been modeled in terms of neglect or self-sufficiency time, interaction time, and the resulting number of agents that one operator can sustain. Cummings and Mitchell explicitly modeled interaction waiting, queueing, and situation-awareness costs in multi-UAV supervision \cite{cummings2008capacity}; Savla and Frazzoli treated human task management as a dynamical queue whose service rate depends on workload \cite{savla2012queue}; Powel and Morgansen derived multiserver M/M/c supervisory-control queues for autonomous vehicles \cite{powel2012multiserver}, and Bush introduced chance-constrained pooled fan-out analysis for UAV operator pools \cite{bush2015suave}. These works already establish queueing and probabilistic service constraints as supervisory-control tools. Our guarantee differs by conditioning on genuinely oversight-critical events and composing referral misses/false referrals, pooled deadline completion, human correctness, and intervention efficacy in the same end-to-end quantity. Most recently, Perkins et al. revisited fan-out by separating robot self-sufficiency from the human's estimate of that self-sufficiency \cite{perkins2025fanout}, while a systematic review by Rey-Becerra and Wischniewski synthesizes 44 empirical studies of single-human/multiple-robot supervision \cite{reybecerra2026review}. We use these results as capacity baselines rather than novelty claims; our open-request approximation reproduces the potential-fan-out formula as an algebraic consistency check.
 
 \textbf{Alerts, querying, and human effort.}
-Alert design can improve or degrade supervisory decisions. Al-Hussaini et al. evaluate alert generation and tasking suggestions in multi-robot search-and-rescue missions \cite{alhussaini2024alerts}. Recent HITL robotics also explicitly trades robot uncertainty against the cost of querying humans: Banerjee et al. use calibrated uncertainty and human intervention cost to decide when modular robot policies should request help \cite{banerjee2026failure}. These approaches optimize or evaluate when to ask for human input. Our question is complementary: given an escalation policy, finite shared human capacity, base rates, and deadlines, when does the resulting architecture provide a specified end-to-end probability of effective intervention?
+Alert design can improve or degrade supervisory decisions. Al-Hussaini et al. evaluate alert generation and tasking suggestions in multi-robot search-and-rescue missions \cite{alhussaini2024alerts}. Recent ICRA work directly optimizes selective human querying: Banerjee et al. learn a contextual-bandit policy that trades task performance against query workload in robot-assisted feeding \cite{banerjee2025ask}, while He et al. use policy uncertainty to allocate a limited budget of expert calls \cite{he2026uncertainty}. Related failure-recovery work uses calibrated uncertainty and intervention cost to decide when modular robot policies should request help \cite{banerjee2026failure}. These methods determine \emph{which situations should consume human attention}. Our problem begins at the shared service channel: given the resulting true- and false-referral traffic from many agents, what fleet scale, staffing, and deadline combinations make timely intervention probabilistically feasible?
 
 \textbf{Formal guarantees and meaningful human control.}
 Formal HRC work has already pursued provable guarantees: Zhang and Lin use POMDP supervisory control and model checking for correct-by-design high-level collaboration \cite{zhang2019performance}. Their guarantee concerns controller/task satisfaction under human and robot uncertainty, whereas ours concerns whether an imperfect escalation mechanism and a finite shared human service channel can deliver a time-bounded intervention opportunity. Meaningful human control (MHC) work likewise emphasizes that nominal involvement is insufficient. Verhagen et al. operationalize MHC for variable-autonomy firefighting teams and identify operator overload as a threat to control \cite{verhagen2024mhc}; Prinz and Mathew further translate MHC into HRI interface-design requirements \cite{prinz2026operationalizing}. We provide a quantitative system-level counterpart: a probabilistic guarantee connecting referral accuracy to the finite supervisory channel and the time available to act.
@@ -118,12 +118,22 @@ H_M(d)=1-\frac{e^{-\delta d}-\delta e^{-d}}{1-\delta},
 \end{equation}
 and \(H_M(d)=1-e^{-d}(1+d)\) when \(\delta=1\). We use this closed form for the analytical results and numerical frontiers.
 
-\section{Effective-Control Guarantees}
+\section{Human-Control Feasibility Frontier}
 \label{sec:theory}
+
+For a referral aggressiveness parameter \(s\), define the \emph{human-control feasibility frontier}
+\begin{equation}
+\mathcal F(C_{\min})=
+\left\{(N,M,s,D):
+r(s)haQ_M(\nu(s),D)\ge C_{\min}
+\right\},
+\label{eq:frontier}
+\end{equation}
+with \(\nu(s)=N\lambda[\pi r(s)+(1-\pi)f(s)]\). This set is the central design object: it separates fleet/referral/staffing/deadline configurations that meet an end-to-end service target from those that do not.
 
 \subsection{Feasibility and capacity}
 
-\textbf{Theorem 1 (service-time ceiling).}
+\textbf{Corollary 1 (service-time ceiling).}
 For any nonnegative waiting time and any human service-time distribution \(S\),
 \begin{equation}
 \boxed{C\le rha\,P(S\le D).}
@@ -134,8 +144,8 @@ Thus a target exceeding this bound is impossible regardless of staffing or sched
 
 For exponential service this gives \(C\le rha(1-e^{-\mu D})\). The argument does not require Poisson arrivals, exponential service, or FCFS.
 
-\textbf{Theorem 2 (effective-control capacity).}
-For fixed \(M,\mu,D\), the stationary M/M/\(M\) completion probability is continuous and strictly decreasing in \(\nu\), from \(1-e^{-\mu D}\) at zero load to zero as \(\nu\uparrow M\mu\). Therefore every feasible target defines a unique \(\nu_M^*\) satisfying
+\textbf{Proposition 1 (frontier monotonicity and capacity).}
+For fixed \(M,\mu,D\), the stationary M/M/\(M\) completion probability is continuous and strictly decreasing in \(\nu\), from \(1-e^{-\mu D}\) at zero load to zero as \(\nu\uparrow M\mu\). It is nondecreasing in \(M\) and \(D\). Thus \(\mathcal F\) is monotone in staffing and deadline, anti-monotone in fleet/request scale \((N,\lambda)\), and every feasible target defines a unique alert-rate capacity \(\nu_M^*\) satisfying
 \begin{equation}
 Q_M(\nu_M^*,D)=\frac{C_{\min}}{rha}.
 \end{equation}
@@ -151,7 +161,7 @@ M_{\min}
 \end{align}
 A coupling argument proves monotonicity: adding arrivals while preserving all shared arrival and service times cannot make any shared FCFS completion earlier. Continuity follows from \eqref{eq:erlangc}--\eqref{eq:qexact}; as \(\nu\uparrow M\mu\), \(p_W\to1\) and the conditional waiting rate tends to zero. Thus the intermediate value theorem gives a unique \(\nu_M^*\). Adding a server cannot delay a completion, so the minimum feasible staffing is also a monotone one-dimensional search.
 
-\subsection{Oversight paradox}
+\subsection{Non-monotonicity in referral aggressiveness}
 
 Let \(s\) increase escalation aggressiveness and define
 \begin{equation}
@@ -166,7 +176,7 @@ Differentiating \eqref{eq:main} gives
 \kappa_M\Lambda[\pi r'+(1-\pi)f'].
 \label{eq:paradox}
 \end{equation}
-Equation~\eqref{eq:paradox} compares the relative gain in critical-event detection with the congestion sensitivity of the human channel. It establishes the Oversight Paradox whenever the latter dominates: a detector can become more sensitive while the end-to-end probability of timely control decreases. Accordingly, detector and staffing decisions are coupled:
+Equation~\eqref{eq:paradox} compares the relative gain in critical-event detection with the congestion sensitivity of the human channel. It establishes what we call the \emph{Oversight Paradox} whenever the latter dominates: a detector can become more sensitive while the end-to-end probability of timely control decreases. Accordingly, detector and staffing decisions are coupled:
 \begin{equation}
 s^*(M)=\arg\max_s r(s)Q_M(\nu(s),D),
 \label{eq:codesign}
@@ -175,7 +185,7 @@ so the system-optimal referral threshold need not maximize recall or any detecto
 
 \subsection{Rare-event scaling}
 
-\textbf{Theorem 3.}
+\textbf{Corollary 2 (rare-event false-positive scaling).}
 For \(N\to\infty\), \(\pi_N\to0\), fixed \(f>0\), and any target strictly below the service-time ceiling,
 \begin{equation}
 \boxed{\frac{M_{\min}(N)}{N}\to\frac{\lambda f}{\mu}.}
@@ -192,7 +202,7 @@ which diverges as \(\pi\to0\) for fixed \(f>0\): nuisance alerts can dominate su
 
 \subsection{Correlated demand}
 
-\textbf{Theorem 4.}
+\textbf{Proposition 2 (average-load insufficiency).}
 Let \(b\) exchangeable alerts arrive simultaneously to \(M\) initially idle exponential servers. For a uniformly selected batch alert,
 \begin{equation}
 \boxed{
@@ -214,6 +224,36 @@ For comparison with potential fan-out, suppose each robot contributes a long-run
 N<\frac{RST}{IT}+1=PFO.
 \end{equation}
 Using the mean values reported by Perkins et al. \cite{perkins2025fanout} gives 6.13 and 3.48 for their high- and low-self-sufficiency conditions. This is an algebraic consistency check, not a claim that classical fan-out itself assumes an open M/M/1 queue; finite-source pooled models have also been studied explicitly \cite{bush2015suave}. EHC adds referral errors and a deadline-aware completion requirement to this capacity layer.
+
+\begin{table}[t]
+\centering
+\caption{Representative supervisory-capacity formulations. Referral model means explicit dependence on critical-event base rate and TPR/FPR.}
+\label{tab:prior}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{p{0.20\columnwidth}p{0.35\columnwidth}ccc}
+\toprule
+Method & Primary quantity & Pool & Referral model & Correlated demand\\
+\midrule
+PFO \cite{perkins2025fanout} & RST/IT capacity & -- & -- & --\\
+Powel \cite{powel2012multiserver} & multiserver queue / V:O ratio & \checkmark & -- & --\\
+Bush \cite{bush2015suave} & chance-constrained pooled fan-out & \checkmark & -- & --\\
+Ours & critical-event end-to-end deadline guarantee & \checkmark & \checkmark & \checkmark\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Empirically anchored multi-robot case study}
+
+Al-Hussaini et al. study a human supervisor making repeated tasking decisions in simulated multi-robot search-and-rescue missions \cite{alhussaini2024alerts}. Their missions take 15--20 minutes, contain ten or more decision instances, and use a 90-s preferred decision limit. The lower-envelope workload implied by ten decisions is therefore approximately 30--40 decisions/h. The study does not report a reusable mean human service time, so we do not invent one; instead, Fig.~\ref{fig:case} asks what service time would be compatible with a 95\% deadline-completion target.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\columnwidth]{../results/figures/icra/fig6_robotics_case_study.pdf}
+    \caption{One-operator timing envelope using the 90-s decision deadline and the lower-envelope decision rates implied by \cite{alhussaini2024alerts}. The 60/h line is a denser stress case, not an empirical estimate.}
+    \label{fig:case}
+\end{figure}
+Under the exponential baseline, a 95\% service level allows a mean review time of only about 24.0 s at 30 decisions/h and 22.5 s at 40 decisions/h (20.0 s at the 60/h stress rate). This is not a fit to the participants in \cite{alhussaini2024alerts}; it is a concrete design reading of their observed mission cadence and deadline.
 
 \subsection{Deadline-aware feasibility}
 
@@ -267,7 +307,7 @@ Across these service families, batch-8 completion remains roughly 0.78--0.82 whi
 
 \begin{table}[t]
 \centering
-\caption{Examples where a conventional criterion passes but a 95\% deadline-aware EHC target fails. The baseline criteria are not incorrect; they certify weaker properties.}
+\caption{Examples where a conventional criterion passes but a 95\% end-to-end deadline target fails. The baseline criteria are not incorrect; they certify weaker properties.}
 \label{tab:counterexamples}
 \footnotesize
 \setlength{\tabcolsep}{3pt}

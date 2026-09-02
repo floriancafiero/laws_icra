@@ -48,7 +48,7 @@ plt.rcParams.update({
 def figure_architecture():
     """Black-and-white end-to-end system schematic for the ICRA paper."""
     fig, ax = plt.subplots(figsize=(7.1, 1.75))
-    ax.set_xlim(0, 1)
+    ax.set_xlim(-0.015, 1.015)
     ax.set_ylim(0, 1)
     ax.axis("off")
 
@@ -84,7 +84,7 @@ def figure_architecture():
 
     arrow(0.13,0.62,0.17,0.62)
     arrow(0.33,0.62,0.37,0.62)
-    arrow(0.52,0.62,0.59,0.62,"alerts $\\nu$")
+    arrow(0.52,0.62,0.59,0.62)
     arrow(0.72,0.62,0.77,0.62)
     arrow(0.89,0.62,0.93,0.62)
 
@@ -654,6 +654,49 @@ def ablation_summary():
     df.to_csv(TAB / "ablation_summary.csv", index=False)
     return df
 
+def figure_robotics_case_study():
+    """Timing envelope anchored to Al-Hussaini et al.'s mission cadence/deadline."""
+    deadline_s = 90.0
+    service_s = np.linspace(8.0, 60.0, 220)
+    rates = [30, 40, 60]
+    rows = []
+
+    plt.figure(figsize=FIGSIZE)
+    for rate_h in rates:
+        qvals = []
+        for mean_s in service_s:
+            mu_h = 3600.0 / mean_s
+            q = q_mm_m(rate_h, mu_h, 1, deadline_s / 3600.0)
+            qvals.append(q)
+            rows.append({
+                "decision_rate_h": rate_h,
+                "mean_service_s": mean_s,
+                "deadline_s": deadline_s,
+                "Q": q,
+                "empirical_status": (
+                    "lower-envelope from 10 decisions / 15-20 min"
+                    if rate_h in [30, 40]
+                    else "denser stress case"
+                ),
+            })
+        label = f"{rate_h}/h" + ("" if rate_h < 60 else " stress")
+        plt.plot(service_s, qvals, label=label)
+
+    plt.axhline(TARGET, linestyle="--", linewidth=0.8, label="95% target")
+    plt.xlabel("Mean human review time (s)")
+    plt.ylabel("Deadline completion probability")
+    plt.ylim(0, 1.01)
+    plt.legend()
+    plt.tight_layout(pad=0.3)
+    plt.savefig(FIG / "fig6_robotics_case_study.pdf")
+    plt.savefig(FIG / "fig6_robotics_case_study.svg")
+    plt.close()
+
+    df = pd.DataFrame(rows)
+    df.to_csv(TAB / "fig6_robotics_case_study.csv", index=False)
+    return df
+
+
 def main():
     figure_architecture()
     figure_feasibility()
@@ -661,6 +704,7 @@ def main():
     figure_false_positive_scaling()
     figure_burst_same_mean()
     figure_general_service_robustness()
+    figure_robotics_case_study()
     counterexample_table()
     fanout_validation()
     exact_simulation_validation()
