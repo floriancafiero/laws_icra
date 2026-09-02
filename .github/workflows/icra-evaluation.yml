@@ -31,3 +31,31 @@ jobs:
           path: |
             results/figures/icra/
             results/tables/icra/
+
+      - name: Install LaTeX and PDF tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-base texlive-latex-extra texlive-fonts-recommended poppler-utils unzip curl
+
+      - name: Fetch official PaperPlaza ieeeconf class
+        run: |
+          curl -fsSL https://ras.papercept.net/conferences/support/files/ieeeconf.zip -o /tmp/ieeeconf.zip
+          unzip -j -o /tmp/ieeeconf.zip '*ieeeconf.cls' -d paper
+          test -f paper/ieeeconf.cls
+
+      - name: Compile ICRA manuscript
+        run: |
+          cd paper
+          pdflatex -interaction=nonstopmode -halt-on-error main.tex
+          bibtex main
+          pdflatex -interaction=nonstopmode -halt-on-error main.tex
+          pdflatex -interaction=nonstopmode -halt-on-error main.tex
+          PAGES=$(pdfinfo main.pdf | awk '/^Pages:/ {print $2}')
+          echo "ICRA manuscript pages: $PAGES"
+          test "$PAGES" -le 8
+
+      - name: Upload compiled manuscript
+        uses: actions/upload-artifact@v4
+        with:
+          name: icra-manuscript
+          path: paper/main.pdf
