@@ -1,0 +1,3 @@
+condition,RST_s,IT_s,PFO_reported_formula,queue_stability_capacity,absolute_difference
+high_RST,23.41,4.56,6.133771929824562,6.133771929824562,0.0
+low_RST,11.3,4.56,3.4780701754385968,3.4780701754385963,4.440892098500626e-16

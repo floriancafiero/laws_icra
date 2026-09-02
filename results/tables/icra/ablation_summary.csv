@@ -1,0 +1,12 @@
+ablation,setting,metric
+finite deadline,"A=0.9, M=1, d=4",0.3296799539643607
+deadline removed,"A=0.9, M=1, d=infinity",1.0
+false-positive burden,"N=10000, FPR=0.0",2.0
+false-positive burden,"N=10000, FPR=0.001",4.0
+false-positive burden,"N=10000, FPR=0.01",22.0
+arrival correlation,"poisson, A=1.2, M=3, d=4",0.9788439999999999
+arrival correlation,"batch4, A=1.2, M=3, d=4",0.9311200000000002
+arrival correlation,"batch8, A=1.2, M=3, d=4",0.795924
+supervisory capacity,"M=2, optimal TPR",0.9098773275355475
+supervisory capacity,"M=4, optimal TPR",0.96562049755411
+supervisory capacity,"M=8, optimal TPR",0.9913436809744834

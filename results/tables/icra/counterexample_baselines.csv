@@ -1,0 +1,5 @@
+case,baseline,baseline_verdict,rho,EHC,EHC_verdict,reason
+"Low utilization, short deadline",rho < 1 and TPR >= 0.95,PASS,0.25,0.8546759474962702,FAIL,Finite service time/deadline ceiling
+Near fan-out capacity,N < PFO (6 < 6.13),PASS,0.978190918841616,0.08353951214965846,FAIL,Stability does not imply deadline service
+High-recall escalation,TPR=0.99,PASS,0.7206359152516194,0.9451749801274689,FAIL,Detector-only recall ignores congestion cost
+Synchronized alerts,rho = 0.40,PASS,0.4,0.798208,FAIL,Mean load hides burst/tail risk
