@@ -230,7 +230,8 @@ input,button{padding:9px;border-radius:8px;border:1px solid #596274;background:#
 <button id="startBlock" onclick="startBlock()">Start block</button><div id="alerts"></div></section>
 <section class="panel hidden" id="done"><h2>Experiment complete</h2><p>Please notify the researcher.</p></section>
 </main><script>
-const setup=document.getElementById("setup"),run=document.getElementById("run"),done=document.getElementById("done"),title=document.getElementById("title"),status=document.getElementById("status"),timer=document.getElementById("timer"),alerts=document.getElementById("alerts");\nlet sid=null,poller=null;
+const setup=document.getElementById("setup"),run=document.getElementById("run"),done=document.getElementById("done"),title=document.getElementById("title"),status=document.getElementById("status"),timer=document.getElementById("timer"),alerts=document.getElementById("alerts");
+let sid=null,poller=null;
 async function api(path,method="GET",body=null){let url=path;if(method==="GET"&&sid)url+="?session_id="+encodeURIComponent(sid);let o={method,headers:{"Content-Type":"application/json"}};if(body)o.body=JSON.stringify({...body,session_id:sid});let r=await fetch(url,o),d=await r.json();if(!r.ok)throw Error(d.error||"Request failed");return d}
 async function startExperiment(){try{let d=await api("/api/start","POST",{participant_id:document.getElementById("pid").value,demo:document.getElementById("demo").checked});sid=d.session_id;setup.classList.add("hidden");run.classList.remove("hidden");title.textContent="Ready for block 1";status.textContent="Conditions are blinded."}catch(e){alert(e.message)}}
 async function startBlock(){try{let d=await api("/api/start_block","POST",{});if(d.finished)return finish();document.getElementById("startBlock").classList.add("hidden");if(poller)clearInterval(poller);await refresh();poller=setInterval(refresh,500)}catch(e){alert(e.message)}}
