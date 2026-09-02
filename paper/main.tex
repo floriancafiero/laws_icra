@@ -132,6 +132,15 @@ For fixed \(M,\mu,D\), the stationary M/M/\(M\) completion probability is contin
 \begin{equation}
 Q_M(\nu_M^*,D)=\frac{C_{\min}}{rha}.
 \end{equation}
+This immediately yields two design quantities,
+\begin{equation}
+N_{\max}=\left\lfloor
+\frac{\nu_M^*}{\lambda[\pi r+(1-\pi)f]}
+\right\rfloor,
+\quad
+M_{\min}=\min\{M:C\ge C_{\min}\}.
+\label{eq:design}
+\end{equation}
 A coupling argument proves monotonicity: adding arrivals while preserving all shared arrival and service times cannot make any shared FCFS completion earlier. Continuity follows from \eqref{eq:erlangc}--\eqref{eq:qexact}; as \(\nu\uparrow M\mu\), \(p_W\to1\) and the conditional waiting rate tends to zero. Thus the intermediate value theorem gives a unique \(\nu_M^*\). Adding a server cannot delay a completion, so the minimum feasible staffing is also a monotone one-dimensional search.
 
 \subsection{Oversight paradox}
@@ -149,7 +158,12 @@ Differentiating \eqref{eq:main} gives
 \kappa_M\Lambda[\pi r'+(1-\pi)f'].
 \label{eq:paradox}
 \end{equation}
-Equation~\eqref{eq:paradox} compares the relative gain in critical-event detection with the congestion sensitivity of the human channel. It establishes the Oversight Paradox whenever the latter dominates: a detector can become more sensitive while the end-to-end probability of timely control decreases.
+Equation~\eqref{eq:paradox} compares the relative gain in critical-event detection with the congestion sensitivity of the human channel. It establishes the Oversight Paradox whenever the latter dominates: a detector can become more sensitive while the end-to-end probability of timely control decreases. Accordingly, detector and staffing decisions are coupled:
+\begin{equation}
+s^*(M)=\arg\max_s r(s)Q_M(\nu(s),D),
+\label{eq:codesign}
+\end{equation}
+so the system-optimal referral threshold need not maximize recall or any detector-only score.
 
 \subsection{Rare-event scaling}
 
@@ -159,7 +173,14 @@ For \(N\to\infty\), \(\pi_N\to0\), fixed \(f>0\), and any target strictly below 
 \boxed{\frac{M_{\min}(N)}{N}\to\frac{\lambda f}{\mu}.}
 \label{eq:scaling}
 \end{equation}
-The lower bound follows from stability, \(M_{\min}\mu>\nu_N\), and \(\nu_N/N\to\lambda f\). For the upper bound, staff at any fixed \(\rho_0<1\): in the many-server underloaded regime the Erlang-C waiting probability tends to zero, so every target strictly below the service-time ceiling is eventually met. Letting \(\rho_0\uparrow1\) matches the lower bound. Thus a fixed nonzero FPR is a first-order staffing term even when genuinely critical events become rare.
+The lower bound follows from stability, \(M_{\min}\mu>\nu_N\), and \(\nu_N/N\to\lambda f\). For the upper bound, staff at any fixed \(\rho_0<1\): in the many-server underloaded regime the Erlang-C waiting probability tends to zero, so every target strictly below the service-time ceiling is eventually met. Letting \(\rho_0\uparrow1\) matches the lower bound. Thus a fixed nonzero FPR is a first-order staffing term even when genuinely critical events become rare. The mechanism is the base-rate effect
+\begin{equation}
+\frac{\nu_F}{\nu_T}
+=
+\frac{(1-\pi)f}{\pi r},
+\label{eq:fpratio}
+\end{equation}
+which diverges as \(\pi\to0\) for fixed \(f>0\): nuisance alerts can dominate supervisory work even when the detector has high sensitivity.
 
 \subsection{Correlated demand}
 
@@ -176,7 +197,7 @@ Consequently, batch-Poisson systems can have identical mean alert rate and utili
 \section{Evaluation}
 \label{sec:evaluation}
 
-We evaluate structural claims rather than fit a single deployment-specific parameter vector. The main axes are dimensionless offered load \(A\) and normalized deadline \(d\). Unless otherwise stated, \(h=a=1\) so that experiments isolate referral and capacity effects; lower application-specific values simply tighten the feasibility ceiling. Analytical curves use \eqref{eq:qexact}. Simulation-only results use at least 50,000 alerts per replicate and five independent seeds. We compare Poisson arrivals with fixed batches and a symmetric two-state Markov-modulated Poisson process (9:1 high/low rate contrast, identical long-run mean). Service distributions are normalized to \(E[S]=1\) and include deterministic, Gamma, exponential, and lognormal families.
+We evaluate structural claims rather than fit a single deployment-specific parameter vector. A 95\% service level is used as an illustrative engineering target in the main figures; changing the target moves the quantitative frontier but not the theorems or qualitative comparisons. The main axes are dimensionless offered load \(A\) and normalized deadline \(d\). Unless otherwise stated, \(h=a=1\) so that experiments isolate referral and capacity effects; lower application-specific values simply tighten the feasibility ceiling. Analytical curves use \eqref{eq:qexact}. Simulation-only results use at least 50,000 alerts per replicate and five independent seeds. We compare Poisson arrivals with fixed batches and a symmetric two-state Markov-modulated Poisson process (9:1 high/low rate contrast, identical long-run mean). Service distributions are normalized to \(E[S]=1\) and include deterministic, Gamma, exponential, and lognormal families.
 
 \subsection{Classical fan-out as a special case}
 
@@ -224,7 +245,15 @@ The finite-scale curves approach the predicted slopes. For example, at \(N=10{,}
     \caption{Identical mean offered load (\(A=1.2,M=3,\rho=0.4,d=4\)) under different temporal arrival structures. Error bars show 95\% Monte Carlo intervals.}
     \label{fig:burst}
 \end{figure}
-Despite identical mean utilization, timely completion is about 0.978 under Poisson arrivals, 0.934 for batches of four, and 0.80 for batches of eight; the MMPP also reduces performance. Repeating the Poisson/batch comparison with deterministic, Gamma (CV 0.5 and 1.5), exponential, and lognormal (CV 1) service times preserves the burst penalty: across these distributions, batch-8 completion remains roughly 0.78--0.82 while the corresponding Poisson cases range from about 0.94 to 1.00.
+Despite identical mean utilization, timely completion is about 0.978 under Poisson arrivals, 0.934 for batches of four, and 0.80 for batches of eight; the MMPP also reduces performance.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\columnwidth]{../results/figures/icra/fig5_service_robustness.pdf}
+    \caption{The burst penalty persists under deterministic, Gamma, exponential, and lognormal human service times. All distributions have mean one; Gamma/lognormal variability is indicated by CV.}
+    \label{fig:service}
+\end{figure}
+Across these service families, batch-8 completion remains roughly 0.78--0.82 while the corresponding Poisson cases range from about 0.94 to 1.00. This separates the burst result from the exponential-service assumption used only for the closed-form analysis.
 
 \begin{table}[t]
 \centering
@@ -247,7 +276,11 @@ Batch-8 demand & \(\rho=.40\) & .80 & Fail\\
 \section{Robotics Interpretation}
 \label{sec:scenario}
 
-We use variable-autonomy firefighting/search-and-rescue as a neutral interpretation: autonomous robots handle routine navigation and sensing while safety-critical or mission-sensitive contingencies can be referred to a human supervisor. Shared environmental changes naturally create correlated requests. Current HRI scales are used only to interpret the dimensionless axes; large fleets are explicitly scaling stress tests.
+We use variable-autonomy firefighting/search-and-rescue as a neutral robotics interpretation, following recent MHC and alert studies in this domain \cite{verhagen2024mhc,alhussaini2024alerts}. A robot may autonomously navigate, map, or inspect while a referral mechanism flags contingencies such as route blockage, uncertain victim detection, communication degradation, or safety-limit violations. In the model, \(\lambda\) is the candidate-contingency rate per robot, \(\pi\) the fraction truly requiring human judgment, \((r,f)\) the referral operating point, and \(S\) the human triage/decision time.
+
+This mapping also motivates correlated demand. A structural change, smoke/thermal front, communication outage, or shared localization failure can affect several robots at once, generating alerts that are not well represented by independent Poisson arrivals. The batch and MMPP experiments therefore act as common-cause stress tests rather than claims about a particular incident distribution. The systematic review in \cite{reybecerra2026review} shows that empirical HRI evidence is concentrated at much smaller team sizes than our asymptotic experiments; large \(N\) is explicitly used to expose scaling laws, not presented as a typical current deployment.
+
+As an interpretation of the dimensionless axes, \(d=4\) simply means that the intervention deadline is four mean human service times (for example, a 90-s deadline with a 22.5-s mean review time). The theory is invariant to that choice of physical units.
 
 \section{Discussion and Limitations}
 \label{sec:discussion}
