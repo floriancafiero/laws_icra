@@ -441,19 +441,20 @@ def counterexample_table():
         }
     )
 
-    dp, L, M, d, pi, threshold = 4.0, 60.0, 4, 4.0, 1e-3, -1.0
+    dp, L, M, d, pi, target_r = 4.0, 60.0, 4, 4.0, 1e-3, 0.99
+    threshold = dp + norm.isf(target_r)
     r, f = binormal_roc(threshold, dp)
     A = L * (pi * r + (1 - pi) * f)
     C = r * q_dimless(A, M, d)
     rows.append(
         {
-            "case": "Recall-maximized escalation",
-            "baseline": f"TPR={r:.4f}",
+            "case": "High-recall escalation",
+            "baseline": f"TPR={r:.2f}",
             "baseline_verdict": "PASS",
             "rho": A / M,
             "EHC": C,
             "EHC_verdict": "PASS" if C >= TARGET else "FAIL",
-            "reason": "False-alert load overloads the human pool",
+            "reason": "Detector-only recall ignores congestion cost",
         }
     )
 
