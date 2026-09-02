@@ -75,12 +75,12 @@ def figure_architecture():
             ax.text((x1+x2)/2, (y1+y2)/2 + yoff, label,
                     ha="center", va="bottom", fontsize=6.8)
 
-    b1=box(0.01,0.48,0.12,0.28,"Fleet\\n$N$ robots")
-    b2=box(0.17,0.48,0.16,0.28,"Candidate situations\\n$\\Lambda=N\\lambda$;  $P(Z=1)=\\pi$")
-    b3=box(0.37,0.48,0.15,0.28,"Referral mechanism\\nTPR $r$; FPR $f$")
-    b4=box(0.59,0.48,0.13,0.28,"Human pool\\n$M$ operators\\nwait $W$, service $S$")
-    b5=box(0.77,0.48,0.12,0.28,"Timely review\\n$W+S\\leq D$\\ncorrectness $h$")
-    b6=box(0.93,0.48,0.06,0.28,"Act\\n$a$\\n$C$")
+    b1=box(0.01,0.48,0.12,0.28,"Fleet\n$N$ robots")
+    b2=box(0.17,0.48,0.16,0.28,"Candidate situations\n$\\Lambda=N\\lambda$;  $P(Z=1)=\\pi$")
+    b3=box(0.37,0.48,0.15,0.28,"Referral mechanism\nTPR $r$; FPR $f$")
+    b4=box(0.59,0.48,0.13,0.28,"Human pool\n$M$ operators\nwait $W$, service $S$")
+    b5=box(0.77,0.48,0.12,0.28,"Timely review\n$W+S\\leq D$\ncorrectness $h$")
+    b6=box(0.93,0.48,0.06,0.28,"Act\n$a$\n$C$")
 
     arrow(0.13,0.62,0.17,0.62)
     arrow(0.33,0.62,0.37,0.62)
@@ -88,8 +88,8 @@ def figure_architecture():
     arrow(0.72,0.62,0.77,0.62)
     arrow(0.89,0.62,0.93,0.62)
 
-    box(0.39,0.08,0.11,0.20,"Missed critical\\n$1-r$",dashed=True,fontsize=7)
-    box(0.75,0.08,0.16,0.20,"No timely effective control\\n$W+S>D$ or incorrect",dashed=True,fontsize=7)
+    box(0.39,0.08,0.11,0.20,"Missed critical\n$1-r$",dashed=True,fontsize=7)
+    box(0.75,0.08,0.16,0.20,"No timely effective control\n$W+S>D$ or incorrect",dashed=True,fontsize=7)
     arrow(0.445,0.48,0.445,0.28)
     arrow(0.83,0.48,0.83,0.28)
 
