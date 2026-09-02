@@ -100,7 +100,7 @@ def figure_feasibility():
         plt.plot(sub["d"], sub["rho_star"], label=f"M={M}")
     plt.axhline(1.0, linestyle=":", linewidth=0.8, label="stability")
     plt.xlabel("Normalized deadline  d = D / E[S]")
-    plt.ylabel("Max. certifiable utilization  rho*")
+    plt.ylabel("Max. feasible utilization  rho*")
     plt.ylim(0, 1.03)
     plt.legend(ncol=2)
     plt.tight_layout(pad=0.3)
