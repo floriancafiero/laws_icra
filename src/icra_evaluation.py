@@ -41,6 +41,10 @@ plt.rcParams.update({
     "xtick.labelsize": 7,
     "ytick.labelsize": 7,
     "legend.fontsize": 7,
+    # PaperPlaza rejects bitmap Type 3 fonts. Embed scalable TrueType fonts
+    # in all generated PDF figures instead.
+    "pdf.fonttype": 42,
+    "ps.fonttype": 42,
 })
 
 
