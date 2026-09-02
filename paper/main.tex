@@ -93,7 +93,23 @@ d=\frac{D}{m},\qquad
 \rho=\frac{A}{M}.
 \label{eq:dimensionless}
 \end{equation}
-For the M/M/\(M\) baseline, \(Q_M\) depends on physical units only through \((A,d,M)\).
+For the M/M/\(M\) baseline, \(Q_M\) depends on physical units only through \((A,d,M)\). Poisson thinning makes the true- and false-alert streams Poisson, and PASTA implies that a critical alert sees the stationary queue distribution. For \(A<M\), the Erlang-C waiting probability is
+\begin{equation}
+p_W=
+\frac{\frac{A^M}{M!}\frac{1}{1-A/M}}
+{\sum_{k=0}^{M-1}\frac{A^k}{k!}+\frac{A^M}{M!}\frac{1}{1-A/M}} .
+\label{eq:erlangc}
+\end{equation}
+Writing \(\delta=M-A\), conditional waiting time in normalized units is exponential with rate \(\delta\). Hence
+\begin{equation}
+Q_M=(1-p_W)(1-e^{-d})+p_WH_M(d),
+\label{eq:qexact}
+\end{equation}
+where, for \(\delta\neq1\),
+\begin{equation}
+H_M(d)=1-\frac{e^{-\delta d}-\delta e^{-d}}{1-\delta},
+\end{equation}
+and \(H_M(d)=1-e^{-d}(1+d)\) when \(\delta=1\). We use this closed form for the analytical results and numerical frontiers.
 
 \section{Effective-Control Guarantees}
 \label{sec:theory}
@@ -109,13 +125,14 @@ Thus a target exceeding this bound is impossible regardless of staffing or sched
 
 \emph{Proof sketch:} completion requires \(W+S\le D\), while \(W\ge0\), hence \(\{W+S\le D\}\subseteq\{S\le D\}\).
 
-For exponential service this gives \(C\le rha(1-e^{-\mu D})\).
+For exponential service this gives \(C\le rha(1-e^{-\mu D})\). The argument does not require Poisson arrivals, exponential service, or FCFS.
 
 \textbf{Theorem 2 (effective-control capacity).}
 For fixed \(M,\mu,D\), the stationary M/M/\(M\) completion probability is continuous and strictly decreasing in \(\nu\), from \(1-e^{-\mu D}\) at zero load to zero as \(\nu\uparrow M\mu\). Therefore every feasible target defines a unique \(\nu_M^*\) satisfying
 \begin{equation}
 Q_M(\nu_M^*,D)=\frac{C_{\min}}{rha}.
 \end{equation}
+A coupling argument proves monotonicity: adding arrivals while preserving all shared arrival and service times cannot make any shared FCFS completion earlier. Continuity follows from \eqref{eq:erlangc}--\eqref{eq:qexact}; as \(\nu\uparrow M\mu\), \(p_W\to1\) and the conditional waiting rate tends to zero. Thus the intermediate value theorem gives a unique \(\nu_M^*\). Adding a server cannot delay a completion, so the minimum feasible staffing is also a monotone one-dimensional search.
 
 \subsection{Oversight paradox}
 
@@ -132,6 +149,7 @@ Differentiating \eqref{eq:main} gives
 \kappa_M\Lambda[\pi r'+(1-\pi)f'].
 \label{eq:paradox}
 \end{equation}
+Equation~\eqref{eq:paradox} compares the relative gain in critical-event detection with the congestion sensitivity of the human channel. It establishes the Oversight Paradox whenever the latter dominates: a detector can become more sensitive while the end-to-end probability of timely control decreases.
 
 \subsection{Rare-event scaling}
 
@@ -141,7 +159,7 @@ For \(N\to\infty\), \(\pi_N\to0\), fixed \(f>0\), and any target strictly below 
 \boxed{\frac{M_{\min}(N)}{N}\to\frac{\lambda f}{\mu}.}
 \label{eq:scaling}
 \end{equation}
-The lower bound follows from stability; the upper bound follows by staffing at any fixed utilization below one and letting that utilization approach one.
+The lower bound follows from stability, \(M_{\min}\mu>\nu_N\), and \(\nu_N/N\to\lambda f\). For the upper bound, staff at any fixed \(\rho_0<1\): in the many-server underloaded regime the Erlang-C waiting probability tends to zero, so every target strictly below the service-time ceiling is eventually met. Letting \(\rho_0\uparrow1\) matches the lower bound. Thus a fixed nonzero FPR is a first-order staffing term even when genuinely critical events become rare.
 
 \subsection{Correlated demand}
 
@@ -153,12 +171,12 @@ P(T\le D)\le\min\left(1,\frac{M\mu D}{b}\right).
 }
 \label{eq:burst-bound}
 \end{equation}
-Consequently, fixed-size batch-Poisson processes can have identical mean alert rate and utilization while deadline-completion probability tends to zero as batch size grows.
+Consequently, batch-Poisson systems can have identical mean alert rate and utilization while deadline-completion probability tends to zero as batch size grows. To see the bound, let \(K_D\) be the number of batch jobs completed by \(D\). Even with an initially empty system, \(E[K_D]\le M\mu D\); exchangeability gives \(P(T\le D)=E[K_D]/b\). Residual backlog from earlier batches can only worsen this bound.
 
 \section{Evaluation}
 \label{sec:evaluation}
 
-We evaluate structural claims rather than fit a single deployment-specific parameter vector. The main axes are dimensionless offered load \(A\) and normalized deadline \(d\); all Monte Carlo experiments use at least 50,000 alerts per replicate and five seeds.
+We evaluate structural claims rather than fit a single deployment-specific parameter vector. The main axes are dimensionless offered load \(A\) and normalized deadline \(d\). Unless otherwise stated, \(h=a=1\) so that experiments isolate referral and capacity effects; lower application-specific values simply tighten the feasibility ceiling. Analytical curves use \eqref{eq:qexact}. Simulation-only results use at least 50,000 alerts per replicate and five independent seeds. We compare Poisson arrivals with fixed batches and a symmetric two-state Markov-modulated Poisson process (9:1 high/low rate contrast, identical long-run mean). Service distributions are normalized to \(E[S]=1\) and include deterministic, Gamma, exponential, and lognormal families.
 
 \subsection{Classical fan-out as a special case}
 
@@ -206,7 +224,7 @@ The finite-scale curves approach the predicted slopes. For example, at \(N=10{,}
     \caption{Identical mean offered load (\(A=1.2,M=3,\rho=0.4,d=4\)) under different temporal arrival structures. Error bars show 95\% Monte Carlo intervals.}
     \label{fig:burst}
 \end{figure}
-Despite identical mean utilization, timely completion is about 0.978 under Poisson arrivals, 0.934 for batches of four, and 0.80 for batches of eight; a two-state MMPP also reduces performance. Repeating the Poisson/batch comparison with deterministic, Gamma, exponential, and lognormal service times preserves the burst penalty, showing that the effect is not specific to exponential service.
+Despite identical mean utilization, timely completion is about 0.978 under Poisson arrivals, 0.934 for batches of four, and 0.80 for batches of eight; the MMPP also reduces performance. Repeating the Poisson/batch comparison with deterministic, Gamma (CV 0.5 and 1.5), exponential, and lognormal (CV 1) service times preserves the burst penalty: across these distributions, batch-8 completion remains roughly 0.78--0.82 while the corresponding Poisson cases range from about 0.94 to 1.00.
 
 \begin{table}[t]
 \centering
@@ -234,16 +252,18 @@ We use variable-autonomy firefighting/search-and-rescue as a neutral interpretat
 \section{Discussion and Limitations}
 \label{sec:discussion}
 
-The framework provides structural feasibility guarantees, not a universal cognitive model. Human correctness \(h\), intervention success \(a\), service-time distributions, event prevalence, and burst structure are application-specific and must ultimately be measured in the operational design domain. The analytical M/M/\(M\) assumptions are used for closed-form results; simulations test the main phenomena under non-exponential service and correlated arrivals.
+The framework provides structural feasibility guarantees, not a universal cognitive model. Human correctness \(h\), intervention success \(a\), service-time distributions, event prevalence, and burst structure are application-specific and must ultimately be measured in the operational design domain. We also assume identical baseline service-time distributions for genuine and nuisance alerts and workload-independent \(h\); class-dependent service, alert fatigue, and priority scheduling are natural extensions. If correctness deteriorates with workload, congestion effects become stronger rather than weaker.
 
-The assurance implication is that human-in-the-loop should be evaluated as the performance of the complete escalation-and-supervision channel rather than as a binary architectural label.
+The analytical M/M/\(M\) assumptions provide closed forms, while the simulation stress tests relax both Poisson arrivals and exponential service. The guarantee should therefore be read as an architecture-level assurance target whose parameters must be calibrated for the intended operating domain, not as a universal staffing recommendation.
+
+The practical implication is a co-design rule: fleet scale, referral threshold, human staffing, and deadline cannot be certified independently. A nominal human-in-the-loop architecture is adequate only if the complete escalation-and-supervision channel meets its required end-to-end service level.
 
 \section{Conclusion}
 
 A right or interface to intervene is not equivalent to an ability to intervene. Effective human control depends jointly on warning quality, scale, human capacity, deadlines, and temporal correlation.
 
-\section*{AI Use Disclosure}
-OpenAI ChatGPT (GPT-5.6 Sol) assisted with drafting and editing prose, literature-search organization, and implementation of simulation/plotting code. The authors are responsible for verifying the mathematical derivations, references, code, numerical results, and final manuscript.
+\section*{Acknowledgments}
+OpenAI ChatGPT (GPT-5.6 Sol) was used to assist with drafting and editing prose in Sections I--VII, organizing literature searches for Section II, and drafting simulation and plotting code underlying Section V. The authors verified the mathematical derivations, cited references, executable code, numerical results, and final manuscript.
 
 \bibliographystyle{IEEEtran}
 \bibliography{references}
