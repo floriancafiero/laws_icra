@@ -17,6 +17,7 @@ import math
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
 import numpy as np
 import pandas as pd
 from scipy.stats import norm
@@ -42,6 +43,62 @@ plt.rcParams.update({
     "legend.fontsize": 7,
 })
 
+
+
+def figure_architecture():
+    """Black-and-white end-to-end system schematic for the ICRA paper."""
+    fig, ax = plt.subplots(figsize=(7.1, 1.75))
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1)
+    ax.axis("off")
+
+    def box(x, y, w, h, label, *, dashed=False, fontsize=7.5):
+        patch = FancyBboxPatch(
+            (x, y), w, h,
+            boxstyle="round,pad=0.012,rounding_size=0.015",
+            facecolor="white",
+            edgecolor="black",
+            linewidth=0.9,
+            linestyle="--" if dashed else "-",
+        )
+        ax.add_patch(patch)
+        ax.text(x + w / 2, y + h / 2, label, ha="center", va="center",
+                fontsize=fontsize)
+        return (x, y, w, h)
+
+    def arrow(x1, y1, x2, y2, label=None, yoff=0.035):
+        ax.add_patch(FancyArrowPatch(
+            (x1, y1), (x2, y2),
+            arrowstyle="-|>", mutation_scale=9, linewidth=0.9, color="black"
+        ))
+        if label:
+            ax.text((x1+x2)/2, (y1+y2)/2 + yoff, label,
+                    ha="center", va="bottom", fontsize=6.8)
+
+    b1=box(0.01,0.48,0.12,0.28,"Fleet\\n$N$ robots")
+    b2=box(0.17,0.48,0.16,0.28,"Candidate situations\\n$\\Lambda=N\\lambda$;  $P(Z=1)=\\pi$")
+    b3=box(0.37,0.48,0.15,0.28,"Referral mechanism\\nTPR $r$; FPR $f$")
+    b4=box(0.59,0.48,0.13,0.28,"Human pool\\n$M$ operators\\nwait $W$, service $S$")
+    b5=box(0.77,0.48,0.12,0.28,"Timely review\\n$W+S\\leq D$\\ncorrectness $h$")
+    b6=box(0.93,0.48,0.06,0.28,"Act\\n$a$\\n$C$")
+
+    arrow(0.13,0.62,0.17,0.62)
+    arrow(0.33,0.62,0.37,0.62)
+    arrow(0.52,0.62,0.59,0.62,"alerts $\\nu$")
+    arrow(0.72,0.62,0.77,0.62)
+    arrow(0.89,0.62,0.93,0.62)
+
+    box(0.39,0.08,0.11,0.20,"Missed critical\\n$1-r$",dashed=True,fontsize=7)
+    box(0.75,0.08,0.16,0.20,"No timely effective control\\n$W+S>D$ or incorrect",dashed=True,fontsize=7)
+    arrow(0.445,0.48,0.445,0.28)
+    arrow(0.83,0.48,0.83,0.28)
+
+    ax.text(0.555,0.82,r"$\\nu=\\Lambda[\\pi r+(1-\\pi)f]$",
+            ha="center",va="center",fontsize=8)
+    fig.tight_layout(pad=0.15)
+    fig.savefig(FIG / "fig0_architecture.pdf")
+    fig.savefig(FIG / "fig0_architecture.svg")
+    plt.close(fig)
 
 def q_dimless(A: float, M: int, d: float) -> float:
     """M/M/M deadline-completion probability with mean service normalized to 1."""
@@ -99,8 +156,8 @@ def figure_feasibility():
         sub = df[df["M"] == M]
         plt.plot(sub["d"], sub["rho_star"], label=f"M={M}")
     plt.axhline(1.0, linestyle=":", linewidth=0.8, label="stability")
-    plt.xlabel("Normalized deadline  d = D / E[S]")
-    plt.ylabel("Max. feasible utilization  rho*")
+    plt.xlabel(r"Normalized deadline $d=D/E[S]$")
+    plt.ylabel(r"Max. feasible utilization $\rho^*$")
     plt.ylim(0, 1.03)
     plt.legend(ncol=2)
     plt.tight_layout(pad=0.3)
@@ -209,7 +266,7 @@ def figure_false_positive_scaling():
     df = pd.DataFrame(rows)
     df.to_csv(TAB / "fig3_false_positive_scaling.csv", index=False)
 
-    plt.figure(figsize=(7.4, 4.8))
+    plt.figure(figsize=(3.45, 2.55))
     for f in [0.001, 0.005, 0.01, 0.02]:
         sub = df[df["FPR"] == f]
         line, = plt.plot(sub["N"], sub["M_min"], label=f"FPR={100*f:.1f}%")
@@ -221,8 +278,8 @@ def figure_false_positive_scaling():
             color=line.get_color(),
         )
     plt.xscale("log")
-    plt.xlabel("Fleet scale N")
-    plt.ylabel("Minimum operators for EHC >= 0.95")
+    plt.xlabel(r"Fleet scale $N$")
+    plt.ylabel(r"Minimum operators for $C\geq0.95$")
     plt.legend()
     plt.tight_layout(pad=0.3)
     plt.savefig(FIG / "fig3_false_positive_scaling.pdf")
@@ -598,6 +655,7 @@ def ablation_summary():
     return df
 
 def main():
+    figure_architecture()
     figure_feasibility()
     figure_oversight_paradox()
     figure_false_positive_scaling()
