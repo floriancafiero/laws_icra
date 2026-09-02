@@ -181,10 +181,9 @@ A<M
 
 After measuring time in units of \(m\), we write \(\widetilde Q_M(A,d)\) for
 the same deadline-completion probability \(Q_M(\nu,D)\). In the stationary
-\(M/M/M\) baseline it depends on physical units only through \((A,d,M)\). Independent Poisson thinning makes both the true- and false-alert
-streams Poisson. Moreover, the Poisson Arrivals See Time Averages
-(PASTA) property implies that a referred critical alert encounters the
-stationary queue-state distribution.
+\(M/M/M\) baseline it depends on physical units only through \((A,d,M)\).
+The Poisson Arrivals See Time Averages (PASTA) property implies that a referred
+critical alert encounters the stationary queue-state distribution.
 
 For \(A<M\), let \(p_W\) denote the probability that an arriving alert must
 wait because all \(M\) supervisors are busy. The Erlang-C formula gives
@@ -477,7 +476,7 @@ with a 95\% deadline-completion target if every instance required review.
     \caption{One-operator timing envelope using the 90-s decision deadline and the approximate 30--60 decisions/h cadence implied by 10--15 decisions over 15--20 min in \cite{alhussaini2024alerts}.}
     \label{fig:case}
 \end{figure}
-Under the exponential baseline, a 95\% service level allows a mean review time of only about 24.0 s at 30 decisions/h, 22.5 s at 40 decisions/h, and 20.0 s at 60 decisions/h. This is a timing-envelope calculation from the reported cadence and deadline,
+Under the exponential baseline, meeting the 95\% deadline-completion target allows a mean review time of only about 24.0 s at 30 decisions/h, 22.5 s at 40 decisions/h, and 20.0 s at 60 decisions/h. This is a timing-envelope calculation from the reported cadence and deadline,
 not a fit to the participants or alert process in \cite{alhussaini2024alerts}.
 
 \subsection{Deadline-aware feasibility}
