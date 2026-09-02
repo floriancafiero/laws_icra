@@ -48,7 +48,7 @@ We further instantiate the feasible-region analysis as queue-aware referral with
 
 \begin{figure*}[t]
     \centering
-    \includegraphics[width=0.96\textwidth]{fig0_architecture.pdf}
+    \includegraphics[width=0.96\textwidth]{fig0_architecture}
     \caption{End-to-end supervisory architecture. Referral quality determines both critical-event coverage and total alert traffic. The human pool then determines whether a referred critical event can be reviewed correctly before deadline \(D\). Effective human control \(C\) is therefore a property of the complete chain, not of the detector or interface alone.}
     \label{fig:architecture}
 \end{figure*}
@@ -425,7 +425,7 @@ Al-Hussaini et al. study a human supervisor making repeated tasking decisions in
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=\columnwidth]{fig6_robotics_case_study.pdf}
+    \includegraphics[width=\columnwidth]{fig6_robotics_case_study}
     \caption{One-operator timing envelope using the 90-s decision deadline and the approximate 30--60 decisions/h cadence implied by 10--15 decisions over 15--20 min in \cite{alhussaini2024alerts}.}
     \label{fig:case}
 \end{figure}
@@ -435,7 +435,7 @@ Under the exponential baseline, a 95\% service level allows a mean review time o
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=\columnwidth]{fig1_feasibility_frontier.pdf}
+    \includegraphics[width=\columnwidth]{fig1_feasibility_frontier}
     \caption{Maximum utilization \(\rho^*=A^*/M\) compatible with a 95\% deadline-completion target. Ordinary stability only requires \(\rho<1\).}
     \label{fig:frontier}
 \end{figure}
@@ -445,7 +445,7 @@ At normalized deadline \(d=4\), the largest offered loads meeting the target are
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=\columnwidth]{fig2_oversight_paradox.pdf}
+    \includegraphics[width=\columnwidth]{fig2_oversight_paradox}
     \caption{Oversight Paradox along a synthetic binormal ROC (\(d'=3\), \(\pi=10^{-3}\), pre-referral load \(L=\Lambda E[S]=20\), \(d=4\), \(h=a=1\)). The system-optimal operating point depends on supervisory capacity.}
     \label{fig:paradox}
 \end{figure}
@@ -455,7 +455,7 @@ With the same detector and pre-escalation workload, the timely-control-maximizin
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=\columnwidth]{fig3_false_positive_scaling.pdf}
+    \includegraphics[width=\columnwidth]{fig3_false_positive_scaling}
     \caption{Minimum staffing versus fleet scale for several false-positive rates. Solid curves: exact \(M_{\min}\) at \(\pi=10^{-4}\); dotted curves: rare-event first-order term \(N\ell f\).}
     \label{fig:scaling}
 \end{figure}
@@ -465,7 +465,7 @@ The finite-scale curves track the rare-event first-order term in \eqref{eq:staff
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=\columnwidth]{fig4_same_mean_burst.pdf}
+    \includegraphics[width=\columnwidth]{fig4_same_mean_burst}
     \caption{Identical mean offered load (\(A=1.2,M=3,\rho=0.4,d=4\)) under different temporal arrival structures. Error bars show 95\% Monte Carlo intervals.}
     \label{fig:burst}
 \end{figure}
@@ -473,7 +473,7 @@ Despite identical mean utilization, timely completion is about 0.978 under Poiss
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=\columnwidth]{fig5_service_robustness.pdf}
+    \includegraphics[width=\columnwidth]{fig5_service_robustness}
     \caption{The burst penalty persists under deterministic, Gamma, exponential, and lognormal human service times. All distributions have mean one; Gamma/lognormal variability is indicated by CV.}
     \label{fig:service}
 \end{figure}
@@ -499,7 +499,7 @@ We test QAR on synthetic two-state MMPP candidate streams with \(\pi=.01\), \(d'
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=\columnwidth]{fig7_capacity_aware_policy.pdf}
+    \includegraphics[width=\columnwidth]{fig7_capacity_aware_policy}
     \caption{Capacity-aware mitigation under bursty candidate demand. Non-preemptive detector-score priority serves higher-score referrals first; QAR adapts the referral threshold only when a queue forms. Parameters are tuned at \(L=14\) on separate development seeds and frozen for evaluation.}
     \label{fig:policy}
 \end{figure}
@@ -526,7 +526,7 @@ A right or interface to intervene is not equivalent to an ability to intervene. 
 
 \section*{Acknowledgments}
 
-\textbf{AI use disclosure} Mistral Chat was used to assist with the formatting of the manuscript and to proofread the English language.
+\textbf{AI use disclosure} ChatGPT and Mistral Chat were used to assist with manuscript editing, mathematical exposition, formatting, and English-language proofreading. The authors verified all mathematical claims, citations, code, and numerical results.
 
 Errors remain our own.
 
