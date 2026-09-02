@@ -22,6 +22,11 @@ jobs:
           unzip -j -o /tmp/ieeeconf.zip '*ieeeconf.cls' -d /tmp/ieeeconf
           test -f /tmp/ieeeconf/ieeeconf.cls
 
+      - name: Install PDF rasterizer
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils
+
       - name: Assemble self-contained Overleaf project
         run: |
           rm -rf overleaf_bundle
@@ -29,7 +34,10 @@ jobs:
           cp paper/main.tex overleaf_bundle/main.tex
           cp paper/references.bib overleaf_bundle/references.bib
           cp /tmp/ieeeconf/ieeeconf.cls overleaf_bundle/ieeeconf.cls
-          cp results/figures/icra/*.pdf overleaf_bundle/figures/
+          for f in results/figures/icra/*.pdf; do
+            name="$(basename "$f" .pdf)"
+            pdftoppm -png -r 400 -singlefile "$f" "overleaf_bundle/figures/$name"
+          done
           cd overleaf_bundle
           python3 - <<'PY'
           from pathlib import Path
