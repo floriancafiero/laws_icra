@@ -16,7 +16,7 @@ $$
 
 where \(Z=1\) means that timely human review is genuinely required.
 
-Let \\(R\\in\\{0,1\\}\\) denote whether a situation is referred to a human. The escalation mechanism has
+Let \\(R\\in\\{0,1\\}\\) denote whether a situation is referred to a human. Let \\(R\\in\\{0,1\\}\\) denote whether a situation is referred to a human. The escalation mechanism has
 
 $$
 r=P(A=1\mid Z=1),\qquad
