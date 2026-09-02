@@ -6,6 +6,7 @@
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs}
 \usepackage{graphicx}
+\graphicspath{{figures/}{../results/figures/icra/}}
 \usepackage{microtype}
 \usepackage{url}
 
@@ -22,7 +23,7 @@ End-to-End Capacity Guarantees for Supervisory Multi-Robot Systems
 \pagestyle{empty}
 
 \begin{abstract}
-Human-in-the-loop architectures are often treated as if providing an intervention channel were sufficient to preserve human control. This paper shows that such a guarantee is inherently system-level: referral quality, event base rates, finite supervisory capacity, human processing time, intervention deadlines, and correlated demand jointly determine whether intervention remains practically available. We define effective human control (EHC) as the probability that an oversight-critical event is referred, reviewed correctly, and acted upon before its deadline. An analytically tractable multi-server baseline defines a human-control feasible region over fleet scale, referral policy, staffing, and deadline, with four consequences. First, some targets are infeasible regardless of staffing because human service time itself imposes a hard ceiling. Second, increasing referral sensitivity can reduce EHC when additional false alerts create sufficient congestion. Third, in rare-event regimes any fixed nonzero false-positive rate induces a first-order staffing requirement linear in fleet scale. Fourth, average utilization cannot guarantee EHC under synchronized alert bursts. Dimensionless simulations with non-Poisson arrivals and non-exponential service distributions show that the main effects persist beyond the analytical assumptions. Finally, we derive a queue-aware referral policy and show on held-out bursty-demand simulations that capacity-aware referral and detector-score scheduling improve timely critical-event service over fixed-threshold FCFS.
+Human-in-the-loop architectures are often treated as if providing an intervention channel were sufficient to preserve human control. This paper shows that such a guarantee is inherently system-level: referral quality, event base rates, finite supervisory capacity, human processing time, intervention deadlines, and correlated demand jointly determine whether intervention remains practically available. We define effective human control (EHC) as the probability that an oversight-critical event is referred, reviewed correctly, and acted upon before its deadline. An analytically tractable multi-server baseline defines a human-control feasible region over fleet scale, referral policy, staffing, and deadline, with four consequences. First, some targets are infeasible regardless of staffing because human service time itself imposes a hard ceiling. Second, increasing referral sensitivity can reduce EHC when additional false alerts create sufficient congestion. Third, in rare-event regimes any fixed nonzero false-positive rate induces a first-order staffing requirement linear in fleet scale. Fourth, average utilization cannot guarantee EHC under synchronized alert bursts. Dimensionless simulations with non-Poisson arrivals and non-exponential service distributions show that the main effects persist beyond the analytical assumptions. Finally, we instantiate a queue-aware referral policy motivated by the capacity analysis and show on held-out bursty-demand simulations that capacity-aware referral and detector-score scheduling improve timely critical-event service over fixed-threshold FCFS.
 \end{abstract}
 
 \section{Introduction}
@@ -47,7 +48,7 @@ We further instantiate the feasible-region analysis as queue-aware referral with
 
 \begin{figure*}[t]
     \centering
-    \includegraphics[width=0.96\textwidth]{figures/fig0_architecture.pdf}
+    \includegraphics[width=0.96\textwidth]{fig0_architecture.pdf}
     \caption{End-to-end supervisory architecture. Referral quality determines both critical-event coverage and total alert traffic. The human pool then determines whether a referred critical event can be reviewed correctly before deadline \(D\). Effective human control \(C\) is therefore a property of the complete chain, not of the detector or interface alone.}
     \label{fig:architecture}
 \end{figure*}
@@ -264,6 +265,128 @@ p_W H_M(d).
 We use this closed form for the analytical results and numerical feasibility
 frontiers.
 
+\subsection{Structural guarantees}
+\label{sec:guarantees}
+
+The closed form above yields a capacity frontier, but several useful conclusions
+can be stated independently of any particular numerical operating point. We
+make the four claims in Sec.~I explicit below; proof arguments are included so
+that the guarantees are self-contained within the paper.
+
+\textbf{Proposition 1 (service-time feasibility ceiling).}
+Let $F_S$ be the CDF of the human service requirement. For any nonnegative
+waiting time $W$, any arrival process, and any scheduling rule for which the
+human response requires service time $S$,
+\begin{equation}
+C\le rha F_S(D).
+\label{eq:service-ceiling}
+\end{equation}
+Indeed, $W\ge0$ implies
+$\{W+S\le D\}\subseteq\{S\le D\}$. Thus a target above
+$rhaF_S(D)$ is impossible regardless of staffing. In the exponential
+baseline, $F_S(D)=1-e^{-\mu D}=1-e^{-d}$. Moreover, at positive load every
+finite $M$ has a nonzero probability of waiting, so the boundary value itself
+can only be approached as $M\to\infty$.
+
+\textbf{Theorem 1 (unique effective-control capacity).}
+Fix $M,\mu,D>0$. On $0\le\nu<M\mu$, $Q_M(\nu,D)$ is continuous and strictly
+decreasing in $\nu$, with
+\begin{equation}
+Q_M(0,D)=1-e^{-\mu D},\qquad
+\lim_{\nu\uparrow M\mu}Q_M(\nu,D)=0.
+\end{equation}
+Consequently, whenever
+$0<q^*=C_{\min}/(rha)<1-e^{-\mu D}$, there is a unique
+$\nu_M^*\in(0,M\mu)$ satisfying $Q_M(\nu_M^*,D)=q^*$, and
+\begin{equation}
+C\ge C_{\min}
+\quad\Longleftrightarrow\quad
+\Lambda[\pi r+(1-\pi)f]\le\nu_M^*.
+\label{eq:capacity-frontier}
+\end{equation}
+In particular,
+\begin{equation}
+N_{\max}=\left\lfloor
+\frac{\nu_M^*}{\lambda[\pi r+(1-\pi)f]}
+\right\rfloor.
+\end{equation}
+For monotonicity, couple a rate-$\nu_1$ FCFS queue to a rate-$\nu_2>\nu_1$
+queue by adding an independent arrival stream and assigning every shared alert
+the same service requirement. Added work cannot advance a shared alert's
+service start, so its completion time is stochastically no smaller. Strictness
+holds in the stable interior with positive deadline and service rate.
+Continuity and the endpoint limits follow from (16)--(23), giving uniqueness.
+
+\textbf{Theorem 2 (Oversight Paradox condition).}
+Let $s$ parameterize increasing referral aggressiveness, with differentiable
+$r(s)$ and $f(s)$, and remain in the stable interior. Define the congestion
+sensitivity
+\begin{equation}
+\kappa_M(\nu,D)=-\frac{\partial\log Q_M(\nu,D)}{\partial\nu}>0.
+\end{equation}
+Since
+$C(s)=r(s)haQ_M(\nu(s),D)$ and
+$\nu(s)=\Lambda[\pi r(s)+(1-\pi)f(s)]$, direct differentiation gives
+\begin{equation}
+\frac{dC}{ds}<0
+\iff
+\frac{r'(s)}{r(s)}
+<\kappa_M(\nu,D)\Lambda
+\bigl[\pi r'(s)+(1-\pi)f'(s)\bigr].
+\label{eq:oversight-condition}
+\end{equation}
+Thus greater detector sensitivity reduces end-to-end control exactly when its
+relative gain in critical-event coverage is smaller than the induced
+congestion loss. If the detector ROC is written $f=f(r)$, the same condition
+becomes
+\begin{equation}
+\frac{1}{r}<\kappa_M\Lambda
+\left[\pi+(1-\pi)\frac{df}{dr}\right].
+\end{equation}
+Fig.~\ref{fig:paradox} illustrates this condition for a binormal ROC.
+
+\textbf{Theorem 3 (rare-event false-positive staffing law).}
+Let $\pi_N\to0$ as $N\to\infty$, while
+$\lambda,\mu,D,r,f,h,a$ remain fixed with $f>0$, and assume the target lies
+strictly below the service-time ceiling. If $M_{\min}(N)$ is the minimum
+staffing satisfying $C\ge C_{\min}$, then, with
+$\ell=\lambda E[S]=\lambda/\mu$,
+\begin{equation}
+\lim_{N\to\infty}\frac{M_{\min}(N)}{N}=\ell f.
+\label{eq:staffing-law}
+\end{equation}
+The lower bound follows from stability:
+$M_{\min}(N)>\nu_N/\mu$ and
+$\nu_N/(N\mu)\to\ell f$. For the upper bound, fix any
+$\rho_0<1$ and choose
+$\widetilde M_N=\lceil\nu_N/(\rho_0\mu)\rceil$.
+At fixed subcritical utilization the Erlang-C waiting probability vanishes in
+the many-server limit, so timely completion approaches the service-only
+ceiling and $\widetilde M_N$ is eventually feasible. Letting
+$\rho_0\uparrow1$ matches the lower bound. More generally, bounded staffing
+as $N\to\infty$ requires
+$\pi_Nr+(1-\pi_N)f_N=O(N^{-1})$; if also $\pi_N=O(N^{-1})$, then necessarily
+$f_N=O(N^{-1})$.
+
+\textbf{Theorem 4 (average utilization cannot certify deadlines).}
+Suppose a batch of $b$ exchangeable alerts arrives simultaneously to $M$
+initially idle exponential servers of rate $\mu$. If $K_D$ is the number of
+batch alerts completed by time $D$, then even an infinite backlog after the
+batch gives at most $M\mu D$ expected service completions. For a uniformly
+selected alert $J$ from the batch,
+\begin{equation}
+P(T_J\le D)=\frac{E[K_D]}{b}
+\le \min\left(1,\frac{M\mu D}{b}\right).
+\label{eq:burst-bound}
+\end{equation}
+Now let batches of size $b$ arrive as a Poisson process of rate
+$\beta_b=\bar\nu/b$. Every system has the same mean alert rate $\bar\nu$ and
+the same nominal utilization $\bar\nu/(M\mu)$, while the favorable bound in
+\eqref{eq:burst-bound} tends to zero as $b\to\infty$; residual backlog can only
+worsen it. Hence equal average utilization admits no positive uniform lower
+bound on deadline completion under synchronized demand. The stress tests in
+Sec.~\ref{sec:evaluation} examine how this effect persists beyond exponential
+service.
 
 \section{Evaluation}
 \label{sec:evaluation}
@@ -302,7 +425,7 @@ Al-Hussaini et al. study a human supervisor making repeated tasking decisions in
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=\columnwidth]{figures/fig6_robotics_case_study.pdf}
+    \includegraphics[width=\columnwidth]{fig6_robotics_case_study.pdf}
     \caption{One-operator timing envelope using the 90-s decision deadline and the approximate 30--60 decisions/h cadence implied by 10--15 decisions over 15--20 min in \cite{alhussaini2024alerts}.}
     \label{fig:case}
 \end{figure}
@@ -312,7 +435,7 @@ Under the exponential baseline, a 95\% service level allows a mean review time o
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=\columnwidth]{figures/fig1_feasibility_frontier.pdf}
+    \includegraphics[width=\columnwidth]{fig1_feasibility_frontier.pdf}
     \caption{Maximum utilization \(\rho^*=A^*/M\) compatible with a 95\% deadline-completion target. Ordinary stability only requires \(\rho<1\).}
     \label{fig:frontier}
 \end{figure}
@@ -322,7 +445,7 @@ At normalized deadline \(d=4\), the largest offered loads meeting the target are
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=\columnwidth]{figures/fig2_oversight_paradox.pdf}
+    \includegraphics[width=\columnwidth]{fig2_oversight_paradox.pdf}
     \caption{Oversight Paradox along a synthetic binormal ROC (\(d'=3\), \(\pi=10^{-3}\), pre-referral load \(L=\Lambda E[S]=20\), \(d=4\), \(h=a=1\)). The system-optimal operating point depends on supervisory capacity.}
     \label{fig:paradox}
 \end{figure}
@@ -332,17 +455,17 @@ With the same detector and pre-escalation workload, the timely-control-maximizin
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=\columnwidth]{figures/fig3_false_positive_scaling.pdf}
-    \caption{Minimum staffing versus fleet scale for several false-positive rates. Solid curves: exact \(M_{\min}\); dotted curves: first-order asymptote \(N\ell f\).}
+    \includegraphics[width=\columnwidth]{fig3_false_positive_scaling.pdf}
+    \caption{Minimum staffing versus fleet scale for several false-positive rates. Solid curves: exact \(M_{\min}\) at \(\pi=10^{-4}\); dotted curves: rare-event first-order term \(N\ell f\).}
     \label{fig:scaling}
 \end{figure}
-The finite-scale curves approach the predicted slopes. For example, at \(N=10{,}000\), \(\ell=\lambda E[S]=0.2\), \(\pi=10^{-4}\), \(r=0.99\), and \(d=4\), the 95\% \(C\) target requires approximately 4, 12, 22, and 42 operators as FPR increases from 0.1\% to 0.5\%, 1\%, and 2\%.
+The finite-scale curves track the rare-event first-order term in \eqref{eq:staffing-law}; the small fixed \(\pi=10^{-4}\) used here makes the critical-event contribution visible but subdominant. For example, at \(N=10{,}000\), \(\ell=\lambda E[S]=0.2\), \(r=0.99\), and \(d=4\), the 95\% \(C\) target requires approximately 4, 12, 22, and 42 operators as FPR increases from 0.1\% to 0.5\%, 1\%, and 2\%.
 
 \subsection{Correlated demand and service-time robustness}
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=\columnwidth]{figures/fig4_same_mean_burst.pdf}
+    \includegraphics[width=\columnwidth]{fig4_same_mean_burst.pdf}
     \caption{Identical mean offered load (\(A=1.2,M=3,\rho=0.4,d=4\)) under different temporal arrival structures. Error bars show 95\% Monte Carlo intervals.}
     \label{fig:burst}
 \end{figure}
@@ -350,7 +473,7 @@ Despite identical mean utilization, timely completion is about 0.978 under Poiss
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=\columnwidth]{figures/fig5_service_robustness.pdf}
+    \includegraphics[width=\columnwidth]{fig5_service_robustness.pdf}
     \caption{The burst penalty persists under deterministic, Gamma, exponential, and lognormal human service times. All distributions have mean one; Gamma/lognormal variability is indicated by CV.}
     \label{fig:service}
 \end{figure}
@@ -365,13 +488,18 @@ The frontier suggests two direct mitigations when demand approaches human capaci
 \tau(q)=\tau_0+\gamma[q-M]_+,
 \label{eq:qar}
 \end{equation}
-where \(q\) is the number of outstanding alerts. The threshold therefore becomes more selective only after all operators are occupied and a queue forms.
+where \(q\) is the number of outstanding alerts. The threshold therefore becomes more selective only after all operators are occupied and a queue forms. This switch has a direct queue-state interpretation in the baseline: conditional on \(q<M\), a newly referred alert starts service immediately, whereas for \(q\ge M\) it must wait for \(q-M+1\) service completions and
+\begin{equation}
+W_q\sim\operatorname{Erlang}(q-M+1,M\mu).
+\label{eq:state-wait}
+\end{equation}
+Thus \(P(W_q+S\le D)\) decreases monotonically with backlog. The QAR rule leaves the no-backlog boundary at \(\tau_0\) and tightens once a waiting queue is already present.
 
 We test QAR on synthetic two-state MMPP candidate streams with \(\pi=.01\), \(d'=3\), \(M=2\), \(d=4\), and exponential mean-one service. For each policy, \(\tau_0\)---and \(\gamma\) where applicable---is selected to maximize \(C\) on three development seeds at candidate load \(L=14\), then frozen for all held-out evaluation streams. The selected \((\tau_0,\gamma)\) values are \((1.7,0)\) for fixed+FCFS, \((1.6,0)\) for score priority, \((1.5,.30)\) for QAR, and \((1.5,.05)\) for QAR+score priority.
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=\columnwidth]{figures/fig7_capacity_aware_policy.pdf}
+    \includegraphics[width=\columnwidth]{fig7_capacity_aware_policy.pdf}
     \caption{Capacity-aware mitigation under bursty candidate demand. Non-preemptive detector-score priority serves higher-score referrals first; QAR adapts the referral threshold only when a queue forms. Parameters are tuned at \(L=14\) on separate development seeds and frozen for evaluation.}
     \label{fig:policy}
 \end{figure}
