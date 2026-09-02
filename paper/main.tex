@@ -42,7 +42,7 @@ We connect referral reliability, base rates, finite human capacity, and deadline
     \item a deadline-aware feasibility ceiling and unique alert-rate capacity for a finite operator pool;
     \item an \emph{Oversight Paradox}, in which increasing referral sensitivity can reduce end-to-end control;
     \item a constant-safety-margin theorem at large offered load, with a rare-event corollary showing that fixed nonzero false-positive rates induce staffing linear in fleet scale;
-    \item a burst bound, valid for general iid service distributions with finite renewal function, showing that equal average utilization can produce arbitrarily different deadline-constrained control under synchronized demand.
+    \item a burst bound, valid for general iid service distributions with finite mean and finite renewal function, showing that equal average utilization can produce arbitrarily different deadline-constrained control under synchronized demand.
 \end{enumerate}
 We additionally give an uncertainty-aware feasibility certificate from bounded parameter estimates, then instantiate the feasible-region analysis as queue-aware referral with detector-score scheduling and evaluate it on held-out bursty-demand simulations.
 
@@ -455,7 +455,7 @@ We evaluate structural claims rather than fit a single deployment-specific param
 
 \subsection{Classical fan-out as a special case}
 
-For comparison with potential fan-out, let \(RST\) denote robot self-sufficiency time and \(IT\) operator interaction time. If each robot contributes a long-run request rate \(\lambda_{\rm req}=1/(RST+IT)\) and one operator services requests at \(\mu=1/IT\), the corresponding open-request approximation \(N\lambda_{\rm req}<\mu\) rearranges to
+For comparison with potential fan-out, let \(RST\) denote robot self-sufficient time and \(IT\) operator interaction time. If each robot contributes a long-run request rate \(\lambda_{\rm req}=1/(RST+IT)\) and one operator services requests at \(\mu=1/IT\), the corresponding open-request approximation \(N\lambda_{\rm req}<\mu\) rearranges to
 \begin{equation}
 N<\frac{RST}{IT}+1=PFO,
 \end{equation}
@@ -583,7 +583,7 @@ This mapping also motivates correlated demand. A structural change, smoke/therma
 
 The framework provides structural feasibility guarantees, not a universal cognitive model. Human correctness \(h\), intervention success \(a\), service-time distributions, event prevalence, and burst structure are application-specific and must ultimately be measured in the operational design domain. We also assume identical baseline service-time distributions for genuine and nuisance alerts and workload-independent \(h\). The analytical FCFS model is a transparent baseline rather than a prescription: Fig.~\ref{fig:policy} shows that detector-score priority and queue-aware referral can materially improve critical-event service, while the service-time ceiling and detector/base-rate constraints remain. Class-dependent service and alert-fatigue models are further extensions; if correctness deteriorates with workload, congestion effects become stronger rather than weaker.
 
-The M/M/\(M\) queue is the analytical baseline; Theorem~4 is service-distribution independent and the stress tests relax both Poisson arrivals and exponential service. The framework should therefore be interpreted as an architecture-level assurance method whose application-specific parameters must be calibrated in the intended operating domain. Exact point estimates are not required for certification: Proposition~2 converts conservative parameter bounds directly into a lower bound on EHC, while Corollary~1 gives sample-path delay dominance of the open-system construction for matched alerts under a common finite-source mechanism. Its design implication is joint: fleet scale, referral policy, staffing, and deadline cannot be assessed independently.
+The M/M/\(M\) queue is the analytical baseline; Theorem~4 is not tied to exponential service, and the stress tests relax both Poisson arrivals and exponential service. The framework should therefore be interpreted as an architecture-level assurance method whose application-specific parameters must be calibrated in the intended operating domain. Exact point estimates are not required for certification: Proposition~2 converts conservative parameter bounds directly into a lower bound on EHC, while Corollary~1 gives sample-path delay dominance of the open-system construction for matched alerts under a common finite-source mechanism. Its design implication is joint: fleet scale, referral policy, staffing, and deadline cannot be assessed independently.
 
 \section{Conclusion}
 
