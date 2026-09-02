@@ -227,18 +227,18 @@ Using the mean values reported by Perkins et al. \cite{perkins2025fanout} gives 
 
 \begin{table}[t]
 \centering
-\caption{Representative supervisory-capacity formulations. Referral model means explicit dependence on critical-event base rate and TPR/FPR.}
+\caption{Representative supervisory-capacity formulations. The \(r,f,\pi\) column denotes an explicit referral/base-rate model; Burst denotes treatment of correlated demand.}
 \label{tab:prior}
 \footnotesize
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{p{0.20\columnwidth}p{0.35\columnwidth}ccc}
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{p{0.18\columnwidth}p{0.37\columnwidth}ccc}
 \toprule
-Method & Primary quantity & Pool & Referral model & Correlated demand\\
+Method & Primary quantity & Pool & \(r,f,\pi\) & Burst\\
 \midrule
 PFO \cite{perkins2025fanout} & RST/IT capacity & -- & -- & --\\
-Powel \cite{powel2012multiserver} & multiserver queue / V:O ratio & \checkmark & -- & --\\
-Bush \cite{bush2015suave} & chance-constrained pooled fan-out & \checkmark & -- & --\\
-Ours & critical-event end-to-end deadline guarantee & \checkmark & \checkmark & \checkmark\\
+Powel \cite{powel2012multiserver} & multiserver queue / V:O ratio & $\checkmark$ & -- & --\\
+Bush \cite{bush2015suave} & chance-constrained pooled fan-out & $\checkmark$ & -- & --\\
+Ours & critical-event end-to-end deadline guarantee & $\checkmark$ & $\checkmark$ & $\checkmark$\\
 \bottomrule
 \end{tabular}
 \end{table}
