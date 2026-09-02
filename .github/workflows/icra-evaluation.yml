@@ -62,4 +62,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: icra-manuscript
-          path: paper/main.pdf
+          path: |
+            paper/main.pdf
+            paper/main.tex
+            paper/references.bib
+            paper/ieeeconf.cls
