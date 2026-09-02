@@ -1,6 +1,6 @@
-# Supplementary proof notes
+# Internal proof notebook
 
-These proofs are written to support the ICRA submission. The main paper should contain concise proof sketches; full details can move to supplementary material.
+These derivations support the ICRA submission and are kept in the repository for verification. ICRA 2027 does not allow a separate supplementary manuscript, so the submitted paper contains self-contained theorem statements and proof sketches; this file is not part of the submission.
 
 ## Lemma 1 — General service-time ceiling
 
@@ -207,136 +207,331 @@ $$
 
 ---
 
-## Theorem — Rare-event false-positive staffing law
+## Theorem — Constant safety margin at large offered load
 
-Let
+Work in normalized units, so service time is \(\mathrm{Exp}(1)\), offered load is \(A\), and staffing is \(M>A\). Fix a deadline \(d>0\) and a target
 
-$$
-\nu_N=N\lambda[\pi_Nr+(1-\pi_N)f].
-$$
+\[
+q^*=\frac{C_{\min}}{rha}\in(0,1-e^{-d}).
+\]
 
-Because \(\pi_N\to0\) and fixed \(f>0\),
+Consider any sequence \(A_n\to\infty\), \(M_n>A_n\), with
 
-$$
-\frac{\nu_N}{N}\to\lambda f.
-$$
+\[
+c_n=M_n-A_n\to c\in(0,\infty).
+\]
 
-### Lower bound
+### Erlang-C waiting probability tends to one
 
-Every feasible stationary system requires
+Erlang-C can be written as
 
-$$
-M_{\min}(N)\mu>\nu_N.
-$$
+\[
+p_W^{-1}
+=
+1+
+\left(1-\frac{A_n}{M_n}\right)
+\frac{\sum_{k=0}^{M_n-1}A_n^k/k!}{A_n^{M_n}/M_n!}.
+\]
+
+Let \(X_n\sim\mathrm{Pois}(A_n)\). Since \(1-A_n/M_n=c_n/M_n\),
+
+\[
+p_W^{-1}
+=
+1+
+\frac{c_n}{M_n}
+\frac{P(X_n\le M_n-1)}{P(X_n=M_n)}.
+\]
+
+Because \(M_n-A_n=O(1)\), the Poisson central limit theorem gives
+
+\[
+P(X_n\le M_n-1)\to \frac12,
+\]
+
+while the local limit theorem (equivalently Stirling's formula) gives
+
+\[
+P(X_n=M_n)\sim \frac1{\sqrt{2\pi A_n}}.
+\]
 
 Therefore
 
-$$
-\liminf_{N\to\infty}\frac{M_{\min}(N)}N
-\ge
-\lim_{N\to\infty}\frac{\nu_N}{N\mu}
+\[
+\frac{c_n}{M_n}
+\frac{P(X_n\le M_n-1)}{P(X_n=M_n)}
 =
-\frac{\lambda f}{\mu}.
-$$
+O(A_n^{-1/2})\to0,
+\]
 
-### Upper bound
+and hence
 
-Fix any utilization level \(\rho_0\in(0,1)\) and choose
+\[
+p_W\to1.
+\]
 
-$$
-\widetilde M_N=
-\left\lceil
-\frac{\nu_N}{\rho_0\mu}
-\right\rceil.
-$$
+### Limiting deadline-completion probability
 
-Then the system remains uniformly subcritical. In the many-server limit with fixed utilization \(\rho_0<1\), Erlang-C waiting probability tends to zero. Hence
+Conditional on waiting,
 
-$$
-Q_{\widetilde M_N}(\nu_N,D)
+\[
+W/m\mid W>0\sim \mathrm{Exp}(M_n-A_n)=\mathrm{Exp}(c_n),
+\]
+
+while
+
+\[
+S/m\sim\mathrm{Exp}(1).
+\]
+
+Therefore
+
+\[
+Q_{M_n}(A_n,d)
 \to
-1-e^{-\mu D}.
-$$
+H_c(d)
+=
+P(\mathrm{Exp}(c)+\mathrm{Exp}(1)\le d).
+\]
 
-Since the target is strictly below
+For \(c\neq1\),
 
-$$
-rha(1-e^{-\mu D}),
-$$
+\[
+H_c(d)
+=
+1-\frac{e^{-cd}-ce^{-d}}{1-c},
+\]
 
-\(\widetilde M_N\) is feasible for all sufficiently large \(N\). Thus
+and for \(c=1\),
 
-$$
-\limsup_{N\to\infty}
-\frac{M_{\min}(N)}N
-\le
-\frac{\lambda f}{\rho_0\mu}.
-$$
+\[
+H_1(d)=1-e^{-d}(1+d).
+\]
 
-Because this holds for every \(\rho_0<1\), let \(\rho_0\uparrow1\):
+If \(c_2>c_1\), then \(\mathrm{Exp}(c_2)\le_{\rm st}\mathrm{Exp}(c_1)\), so \(H_c(d)\) is strictly increasing in \(c\). Also
 
-$$
-\limsup_{N\to\infty}
-\frac{M_{\min}(N)}N
-\le
-\frac{\lambda f}{\mu}.
-$$
+\[
+\lim_{c\downarrow0}H_c(d)=0,
+\qquad
+\lim_{c\uparrow\infty}H_c(d)=1-e^{-d}.
+\]
 
-The liminf and limsup coincide.
+Hence there is a unique \(c^*=c^*(d,q^*)\) satisfying
 
-### Fixed-staffing corollary
+\[
+H_{c^*}(d)=q^*.
+\]
 
-If \(M\) remains bounded, stability alone requires
+For every \(\varepsilon>0\), staffing with spare capacity \(c^*-\varepsilon\) is eventually infeasible and staffing with \(c^*+\varepsilon\) is eventually feasible. Thus the minimum integer staffing obeys
 
-$$
-N\lambda[\pi_Nr+(1-\pi_N)f_N]=O(1).
-$$
+\[
+M_{\min}(A)=\left\lceil A+c^*+o(1)\right\rceil.
+\]
 
-Thus
+For \(d=4\) and \(q^*=0.95\),
 
-$$
+\[
+c^*\approx1.4997568.
+\]
+
+This is stronger than a first-order offered-load statement: the deadline guarantee requires only a constant spare-capacity margin at large scale.
+
+### Rare-event false-positive corollary
+
+For the fleet,
+
+\[
+A_N
+=
+\frac{\nu_N}{\mu}
+=
+N\ell[\pi_Nr+(1-\pi_N)f],
+\qquad
+\ell=\lambda E[S]=\frac{\lambda}{\mu}.
+\]
+
+If \(\pi_N\to0\) and \(f>0\) is fixed,
+
+\[
+\frac{A_N}{N}\to\ell f.
+\]
+
+Since \(M_{\min}(N)=A_N+O(1)\) up to integer rounding,
+
+\[
+\frac{M_{\min}(N)}N\to\ell f.
+\]
+
+If additionally \(\pi_N=O(1/N)\), then
+
+\[
+A_N=N\ell f+O(1),
+\]
+
+so the stronger statement holds:
+
+\[
+M_{\min}(N)=N\ell f+O(1).
+\]
+
+If staffing remains bounded, stability alone requires
+
+\[
 \pi_Nr+(1-\pi_N)f_N=O(1/N).
-$$
+\]
 
-If additionally \(\pi_N=O(1/N)\), nonnegativity implies \(f_N=O(1/N)\).
+When \(\pi_N=O(1/N)\), this forces \(f_N=O(1/N)\).
 
 ---
 
-## Theorem — Average-load insufficiency
+## Theorem — Distribution-free burst impossibility
 
-At time zero let \(b\) exchangeable jobs arrive to \(M\) initially idle servers. Service times are iid exponential with rate \(\mu\). Give the servers an infinite backlog after the \(b\) tagged jobs if necessary; this can only increase the total number of service completions by time \(D\).
+Let service times \(S_1,S_2,\ldots\) be iid, strictly positive and nonexplosive. Define the renewal function
 
-With infinite backlog, each server's completion process is Poisson with rate \(\mu\). Therefore the expected total number of completions by \(D\) is \(M\mu D\).
-
-Let \(K_D\) be the number of tagged batch jobs actually completed by \(D\). Then
-
-$$
-E[K_D]\le M\mu D.
-$$
-
-Let \(J\) be uniformly sampled from the \(b\) exchangeable batch jobs. Conditional on \(K_D\), exactly \(K_D/b\) of the batch has completed, so
-
-$$
-P(T_J\le D)
+\[
+U_S(D)
 =
-E\left[\frac{K_D}{b}\right]
+\sum_{k\ge1}P(S_1+\cdots+S_k\le D)
+=
+E[N_S(D)]
+<\infty,
+\]
+
+where \(N_S(D)\) is the number of completions by time \(D\) from one continuously busy server.
+
+At time zero, let a batch of \(b\) exchangeable jobs arrive to \(M\) initially idle servers. Give every server infinite backlog if necessary. This can only increase the number of service completions by \(D\). Therefore, if \(K_D\) is the number of tagged batch jobs completed by \(D\),
+
+\[
+E[K_D]\le M U_S(D).
+\]
+
+For a uniformly selected batch job \(J\),
+
+\[
+P(T_J\le D)
 =
 \frac{E[K_D]}b
 \le
-\frac{M\mu D}{b}.
-$$
+\min\left(1,\frac{M U_S(D)}b\right).
+\]
 
-The probability is trivially at most one, giving
+Now let batches of size \(b\) arrive as a Poisson process of rate
 
-$$
-P(T_J\le D)
-\le
-\min\left(1,\frac{M\mu D}{b}\right).
-$$
+\[
+\beta_b=\frac{\bar\nu}{b}.
+\]
 
-Now make batch arrival epochs Poisson with rate \(\beta_b=\bar\nu/b\). The long-run mean alert rate is always \(\bar\nu\), hence nominal utilization is always \(\bar\nu/(M\mu)\), independent of \(b\).
+The mean alert rate is always \(\bar\nu\), so the nominal utilization is always
 
-Yet the favorable empty-system bound for an alert inside a batch tends to zero as \(b\to\infty\). Residual backlog from previous batches can only worsen completion times. Thus equal average utilization does not imply any positive uniform lower bound on deadline-completion probability.
+\[
+\rho=\frac{\bar\nu E[S]}{M},
+\]
+
+independent of \(b\). Yet the favorable empty-system bound above tends to zero as \(b\to\infty\). Residual backlog from earlier batches can only worsen completion times.
+
+Thus equal average utilization does not imply any positive uniform lower bound on deadline completion, for arbitrary service distributions satisfying \(U_S(D)<\infty\).
+
+For exponential service,
+
+\[
+U_S(D)=\mu D,
+\]
+
+which recovers the earlier bound
+
+\[
+P(T_J\le D)\le \min(1,M\mu D/b).
+\]
+
+---
+
+## Proposition — Uncertainty-aware feasibility certificate
+
+Expose the service-rate dependence as \(Q_M(\nu,D;\mu)\). Suppose calibration provides a rectangular uncertainty set
+
+\[
+\lambda\in[\lambda^-,\lambda^+],\quad
+\pi\in[\pi^-,\pi^+],\quad
+r\in[r^-,r^+],\quad
+f\in[f^-,f^+],
+\]
+
+\[
+\mu\in[\mu^-,\mu^+],\quad
+D\in[D^-,D^+],\quad
+h\ge h^-,\quad
+a\ge a^-,
+\]
+
+with \(r^-\ge f^+\). The last condition ensures that increasing prevalence increases total referral traffic throughout the uncertainty set.
+
+By the arrival-rate coupling above, \(Q_M\) decreases in \(\nu\). By coupling exponential service requirements, it increases in \(\mu\). It also increases in \(D\). Hence, for each fixed \(r\), the worst case occurs at
+
+\[
+\lambda=\lambda^+,\quad
+\pi=\pi^+,\quad
+f=f^+,\quad
+\mu=\mu^-,\quad
+D=D^-,\quad
+h=h^-,\quad
+a=a^-.
+\]
+
+Therefore every admissible parameter vector satisfies
+
+\[
+C\ge C_{\rm cert},
+\]
+
+where
+
+\[
+C_{\rm cert}
+=
+h^-a^-
+\min_{r\in[r^-,r^+]}
+r\,Q_M\!\left(
+N\lambda^+[\pi^+r+(1-\pi^+)f^+],
+D^-;\mu^-
+\right).
+\]
+
+Thus
+
+\[
+C_{\rm cert}\ge C_{\min}
+\]
+
+is a conservative certificate for the entire uncertainty set. The only remaining optimization is one-dimensional in \(r\), because the Oversight Paradox means the control probability need not be monotone in referral sensitivity.
+
+---
+
+## Corollary — Finite-source conservatism
+
+Suppose each robot has a rate-\(\lambda\) Poisson candidate clock, but candidate arrivals from that robot are suppressed while it has an outstanding referred alert.
+
+Couple this finite-source system with the open model using:
+
+- the same Poisson clocks,
+- the same critical/noncritical marks,
+- the same referral marks,
+- and the same service requirements for every arrival present in both systems.
+
+Every finite-source arrival is then also an arrival in the open system. The open system may contain additional jobs but never fewer. Under FCFS with identical service requirements, these added jobs cannot advance any shared alert's service start or completion.
+
+Hence, sample-path-wise for every shared alert,
+
+\[
+T_{\rm finite}\le T_{\rm open},
+\]
+
+so
+
+\[
+Q_M^{\rm finite}(D)\ge Q_M^{\rm open}(D).
+\]
+
+The open-Poisson model is therefore conservative for this common class of finite-source supervisory systems.
 
 ---
 
