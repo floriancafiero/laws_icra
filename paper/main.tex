@@ -115,7 +115,7 @@ There are \(M\) human supervisors serving a common queue of referred alerts.
 Any available supervisor takes the oldest waiting alert. In the analytical
 baseline, alerts are therefore served first-come first-served (FCFS).
 Let \(S\) denote the time required for a supervisor to review an alert and
-complete the corresponding human decision or intervention command. Service times are assumed iid exponential with rate \(\mu\), with mean
+complete the corresponding human decision or intervention command. Service times are assumed independent and identically distributed (iid) exponential with rate \(\mu\), with mean
 \begin{equation}
 m=E[S]=\frac{1}{\mu}.
 \label{eq:mean-service}
@@ -166,6 +166,8 @@ C=rhaQ_M(\nu,D).
 }
 \label{eq:main}
 \end{equation}
+For a chosen \(C_{\min}\), the EHC-feasible region is the set of parameter
+settings satisfying \(C\ge C_{\min}\).
 
 For the exponential-service baseline, introduce the dimensionless quantities
 \begin{equation}
@@ -462,7 +464,7 @@ Using the mean values reported by Perkins et al. \cite{perkins2025fanout} gives 
 
 \begin{table}[t]
 \centering
-\caption{Representative supervisory-capacity formulations. The \(r,f,\pi\) column denotes an explicit referral/base-rate model; Burst denotes treatment of correlated demand.}
+\caption{Representative supervisory-capacity formulations. Pool denotes an explicit pooled-supervisor model; the \(r,f,\pi\) column denotes an explicit referral/base-rate model; Burst denotes treatment of correlated demand.}
 \label{tab:prior}
 \footnotesize
 \setlength{\tabcolsep}{2.5pt}
@@ -556,7 +558,7 @@ where \([x]_+=\max(x,0)\), \(q\) is the number of outstanding alerts (in service
 W_q\sim\operatorname{Erlang}(q-M+1,M\mu),
 \label{eq:state-wait}
 \end{equation}
-with shape \(q-M+1\) and rate \(M\mu\). Thus \(P(W_q+S\le D)\) decreases monotonically with backlog. The QAR rule leaves the no-backlog boundary at \(\tau_0\) and tightens once a waiting queue is already present.
+with shape \(q-M+1\) and rate \(M\mu\). Thus \(P(W_q+S\le D)\) decreases monotonically with backlog. The QAR rule keeps the threshold at \(\tau_0\) until a waiting queue is present, then tightens it with additional queued work.
 
 We test QAR on synthetic two-state MMPP candidate streams with \(\pi=.01\), \(d'=3\), \(M=2\), \(d=4\), and exponential mean-one service. For each policy, \(\tau_0\)---and \(\gamma\) where applicable---is selected to maximize \(C\) on three development seeds at candidate load \(L=14\), then frozen for all held-out evaluation streams. The selected \((\tau_0,\gamma)\) values are \((1.7,0)\) for fixed+FCFS, \((1.6,0)\) for score priority, \((1.5,.30)\) for QAR, and \((1.5,.05)\) for QAR+score priority.
 
@@ -581,7 +583,7 @@ This mapping also motivates correlated demand. A structural change, smoke/therma
 
 The framework provides structural feasibility guarantees, not a universal cognitive model. Human correctness \(h\), intervention success \(a\), service-time distributions, event prevalence, and burst structure are application-specific and must ultimately be measured in the operational design domain. We also assume identical baseline service-time distributions for genuine and nuisance alerts and workload-independent \(h\). The analytical FCFS model is a transparent baseline rather than a prescription: Fig.~\ref{fig:policy} shows that detector-score priority and queue-aware referral can materially improve critical-event service, while the service-time ceiling and detector/base-rate constraints remain. Class-dependent service and alert-fatigue models are further extensions; if correctness deteriorates with workload, congestion effects become stronger rather than weaker.
 
-The M/M/\(M\) model is used only for closed-form analysis; Theorem~4 is service-distribution independent and the stress tests relax both Poisson arrivals and exponential service. The framework should therefore be interpreted as an architecture-level assurance method whose application-specific parameters must be calibrated in the intended operating domain. Exact point estimates are not required for certification: Proposition~2 converts conservative parameter bounds directly into a lower bound on EHC, while Corollary~1 gives sample-path delay dominance of the open-system construction for matched alerts under a common finite-source mechanism. Its design implication is joint: fleet scale, referral policy, staffing, and deadline cannot be assessed independently.
+The M/M/\(M\) queue is the analytical baseline; Theorem~4 is service-distribution independent and the stress tests relax both Poisson arrivals and exponential service. The framework should therefore be interpreted as an architecture-level assurance method whose application-specific parameters must be calibrated in the intended operating domain. Exact point estimates are not required for certification: Proposition~2 converts conservative parameter bounds directly into a lower bound on EHC, while Corollary~1 gives sample-path delay dominance of the open-system construction for matched alerts under a common finite-source mechanism. Its design implication is joint: fleet scale, referral policy, staffing, and deadline cannot be assessed independently.
 
 \section{Conclusion}
 
