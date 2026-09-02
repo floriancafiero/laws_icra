@@ -9,6 +9,9 @@ concurrency:
   group: icra-evaluation-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: write
+
 jobs:
   test-and-evaluate:
     runs-on: ubuntu-latest
@@ -27,6 +30,18 @@ jobs:
 
       - name: Generate ICRA evaluation
         run: python src/icra_evaluation.py
+
+      - name: Commit generated figures and tables
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f results/figures/icra/ results/tables/icra/
+          if git diff --cached --quiet; then
+            echo "Generated outputs already up to date."
+          else
+            git commit -m "Version generated ICRA figures and tables [skip ci]"
+            git push
+          fi
 
       - name: Upload generated evaluation
         uses: actions/upload-artifact@v4
