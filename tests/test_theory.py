@@ -35,7 +35,7 @@ class TheorySanityTests(unittest.TestCase):
                 self.assertLessEqual(q_mm_m(a, 1.0, m, 4.0), ceiling + 1e-12)
 
     def test_feasibility_frontier_known_point(self):
-        self.assertAlmostEqual(max_offered_load(4, 4.0), 2.9409, places=3)
+        self.assertAlmostEqual(max_offered_load(4, 4.0), 2.9414259939, places=6)
 
     def test_fanout_recovery_identity(self):
         rst, it = 23.41, 4.56
