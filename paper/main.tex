@@ -166,44 +166,65 @@ If each robot generates one request per \(RST+IT\) cycle, then \(\lambda_{\rm re
 \begin{equation}
 N<\frac{RST}{IT}+1=PFO.
 \end{equation}
+Using the mean values reported by Perkins et al. \cite{perkins2025fanout}, this gives potential fan-out values 6.13 and 3.48 for their high- and low-self-sufficiency conditions, exactly matching the queue stability boundary. This identity validates the capacity layer of our formulation; the additional EHC constraint imposes a deadline-aware service level rather than mere stability.
 
 \subsection{Deadline-aware feasibility}
 
 \begin{figure}[t]
     \centering
     \includegraphics[width=\columnwidth]{../results/figures/icra/fig1_feasibility_frontier.pdf}
-    \caption{Deadline-aware capacity versus ordinary stability. A stable system can still fail a deadline-constrained EHC target.}
+    \caption{Deadline-aware capacity versus ordinary stability for \(C_{\min}=0.95\). A stable system can still fail a deadline-constrained EHC target.}
     \label{fig:frontier}
 \end{figure}
+At normalized deadline \(d=4\), the largest offered loads meeting a 95\% timely-completion target are approximately \(A^*=0.25,1.07,2.94,6.84\) for \(M=1,2,4,8\), respectively, all strictly below the corresponding stability limits \(A<M\). The gap is largest when deadlines are tight.
 
 \subsection{Detector--capacity co-design}
 
 \begin{figure}[t]
     \centering
     \includegraphics[width=\columnwidth]{../results/figures/icra/fig2_oversight_paradox.pdf}
-    \caption{Oversight Paradox along a synthetic ROC curve. The EHC-maximizing operating point depends on supervisory capacity.}
+    \caption{Oversight Paradox along a synthetic binormal ROC (\(d'=3\), \(\pi=10^{-3}\), \(d=4\)). The EHC-maximizing operating point depends on supervisory capacity.}
     \label{fig:paradox}
 \end{figure}
+With the same detector and pre-escalation workload, the EHC-maximizing TPR rises from about 0.91 with two operators to 0.97 with four and 0.99 with eight. Thus the operating point that is best for the detector in isolation is not generally best for the supervisory architecture.
 
 \subsection{False-positive scaling}
 
 \begin{figure}[t]
     \centering
     \includegraphics[width=\columnwidth]{../results/figures/icra/fig3_false_positive_scaling.pdf}
-    \caption{Minimum staffing versus fleet scale for several false-positive rates, with first-order asymptotic slopes.}
+    \caption{Minimum staffing versus fleet scale for several false-positive rates, with the first-order asymptotic term \(N\ell f\).}
     \label{fig:scaling}
 \end{figure}
+The finite-scale curves approach the predicted slopes. For example, at \(N=10{,}000\), \(\ell=\lambda E[S]=0.2\), \(\pi=10^{-4}\), \(r=0.99\), and \(d=4\), the 95\% EHC target requires approximately 4, 12, 22, and 42 operators as FPR increases from 0.1\% to 0.5\%, 1\%, and 2\%.
 
 \subsection{Correlated demand and service-time robustness}
 
 \begin{figure}[t]
     \centering
     \includegraphics[width=\columnwidth]{../results/figures/icra/fig4_same_mean_burst.pdf}
-    \caption{Identical mean offered load (\(\rho=0.4\)) under different temporal arrival structures.}
+    \caption{Identical mean offered load (\(A=1.2,M=3,\rho=0.4,d=4\)) under different temporal arrival structures. Error bars show 95\% Monte Carlo intervals.}
     \label{fig:burst}
 \end{figure}
+Despite identical mean utilization, timely completion is about 0.978 under Poisson arrivals, 0.934 for batches of four, and 0.80 for batches of eight; a two-state MMPP also reduces performance. Repeating the Poisson/batch comparison with deterministic, Gamma, exponential, and lognormal service times preserves the burst penalty, showing that the effect is not specific to exponential service.
 
-% Compress service-distribution robustness into a small panel or table if needed.
+\begin{table}[t]
+\centering
+\caption{Examples where a conventional criterion passes but a 95\% deadline-aware EHC target fails. The baseline criteria are not incorrect; they certify weaker properties.}
+\label{tab:counterexamples}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{p{0.24\columnwidth}p{0.24\columnwidth}cc}
+\toprule
+Case & Conventional criterion & EHC & EHC verdict\\
+\midrule
+Short deadline & \(\rho=.25\), TPR=.99 & .855 & Fail\\
+Near fan-out limit & \(N=6<PFO=6.13\) & .084 & Fail\\
+Recall-maximized alerting & TPR\(\approx1\) & \(\approx0\) & Fail\\
+Batch-8 demand & \(\rho=.40\) & .80 & Fail\\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \section{Robotics Interpretation}
 \label{sec:scenario}
