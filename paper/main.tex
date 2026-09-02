@@ -115,13 +115,11 @@ There are \(M\) human supervisors serving a common queue of referred alerts.
 Any available supervisor takes the oldest waiting alert. In the analytical
 baseline, alerts are therefore served first-come first-served (FCFS).
 Let \(S\) denote the time required for a supervisor to review an alert and
-complete the corresponding human decision or intervention command. Service times are assumed independent and identically distributed (iid) exponential with rate \(\mu\), with mean
-\begin{equation}
-m=E[S]=\frac{1}{\mu}.
-\label{eq:mean-service}
-\end{equation}
-Together with the Poisson alert process and \(M\) parallel supervisors, these
-assumptions define an \(M/M/M\) queue in Kendall notation.
+complete the corresponding human decision or intervention command. Service
+times are independent and identically distributed (iid) exponential with rate
+\(\mu\) and mean \(m=E[S]=1/\mu\). Together with the Poisson alert process
+and \(M\) parallel supervisors, these assumptions define an \(M/M/M\) queue
+in Kendall notation.
 
 Let \(W\) denote the waiting time from the arrival of a referred alert in the
 human queue until a supervisor begins processing it. Let \(D>0\) be the residual intervention deadline available when the referred alert
@@ -147,18 +145,11 @@ also the stationary deadline-completion probability for a generic referred
 alert. To keep notation compact, the dependence of \(Q_M\) on the fixed
 service rate \(\mu\) is left implicit.
 
-Let
-\begin{equation}
-h
-=
-P(\text{correct response}\mid Z=1,R=1,W+S\leq D)
-\end{equation}
-be the probability that a timely human response is correct, and define
-\begin{equation}
-a=P(\text{intended effect}\mid Z=1,R=1,W+S\le D,\text{ response correct}).
-\end{equation}
-We assume \(h\) and \(a\) are constant with respect to the current queue state
-in the analytical baseline. Using the EHC definition in \eqref{eq:ehc}, the
+Let \(h=P(\text{correct response}\mid Z=1,R=1,W+S\le D)\) be the
+probability that a timely response is correct, and let \(a\) be the
+conditional probability that such a correct timely response produces the
+intended effect. We assume \(h\) and \(a\) do not vary with queue state in
+the analytical baseline. Using the EHC definition in \eqref{eq:ehc}, the
 chain rule gives
 \begin{equation}
 \boxed{
@@ -207,19 +198,9 @@ p_W=
 \label{eq:erlangc}
 \end{equation}
 
-Writing the normalized spare-capacity margin as
-\begin{equation}
-\delta=M-A>0,
-\end{equation}
-the waiting time conditional on having to wait satisfies
-\begin{equation}
-\frac{W}{m}\,\bigg|\,W>0
-\sim \operatorname{Exp}(\delta),
-\end{equation}
-while the normalized service time satisfies
-\begin{equation}
-\frac{S}{m}\sim\operatorname{Exp}(1).
-\end{equation}
+Write the normalized spare-capacity margin as \(\delta=M-A>0\). Conditional
+on waiting, \(W/m\mid W>0\sim\operatorname{Exp}(\delta)\), while
+\(S/m\sim\operatorname{Exp}(1)\).
 Let
 \begin{equation}
 H_{\delta}(d)
@@ -307,25 +288,19 @@ N_{\max}=\left\lfloor
 \frac{\nu_M^*}{\lambda[\pi r+(1-\pi)f]}
 \right\rfloor.
 \end{equation}
-For monotonicity, couple a rate-$\nu_1$ FCFS queue to a rate-$\nu_2>\nu_1$
-queue by adding an independent arrival stream and assigning every shared alert
-the same service requirement. Added work cannot advance a shared alert's
-service start, so its completion time is stochastically no smaller. Strictness
-holds in the stable interior with positive deadline and service rate.
-At \(\nu=0\), \(Q_M\) is understood by continuous extension, equivalently as
-the completion probability of a tagged alert entering an empty system.
-Continuity and the endpoint limits follow from \eqref{eq:erlangc}--\eqref{eq:qexact},
-giving uniqueness.
+For monotonicity, couple rate-\(\nu_1\) and rate-\(\nu_2>\nu_1\) FCFS
+queues by adding an independent arrival stream to the former and using the same
+service requirements for shared alerts. Added work cannot advance a shared
+completion, giving strict stochastic deterioration in the stable interior.
+At \(\nu=0\), \(Q_M\) is understood by continuous extension (a tagged alert
+entering an empty system). Continuity and the endpoint limits follow from
+\eqref{eq:erlangc}--\eqref{eq:qexact}, yielding uniqueness.
 
 \textbf{Theorem 2 (Oversight Paradox condition).}
 Let $s$ parameterize increasing referral aggressiveness, with differentiable
 $r(s)>0$ and $f(s)$ satisfying $r'(s),f'(s)\ge0$ throughout the stable
-interior. Define the congestion
-sensitivity
-\begin{equation}
-\kappa_M(\nu,D)=-\frac{\partial\log Q_M(\nu,D)}{\partial\nu}>0.
-\end{equation}
-Since
+interior. Define the congestion sensitivity
+\(\kappa_M(\nu,D)=-\partial_\nu\log Q_M(\nu,D)>0\). Since
 $C(s)=r(s)haQ_M(\nu(s),D)$ and
 $\nu(s)=\Lambda[\pi r(s)+(1-\pi)f(s)]$, direct differentiation gives
 \begin{equation}
@@ -369,19 +344,15 @@ M_{\min}(A)=\left\lceil A+c^*+\varepsilon_A\right\rceil.
 \end{equation}
 Thus the continuous spare-capacity threshold converges to \(c^*\); the ceiling
 in \eqref{eq:safety-margin} is only the unavoidable integer staffing step.
-To see \eqref{eq:constant-margin}, let $c_n=M_n-A_n$ and let \(X_n\) be a
-Poisson random variable with mean \(A_n\). Erlang-C can be rewritten as
-$p_W^{-1}=1+(c_n/M_n)P(X_n\le M_n-1)/P(X_n=M_n)$. Because
-\(M_n=A_n+O(1)\), standard central and local Poisson approximations near the
-mean make the added term $O(A_n^{-1/2})$, so $p_W\to1$;
-conditional waiting remains exponential with rate $c_n\to c$, hence
-$\widetilde Q_{M_n}\to H_c$. Thus almost every alert may wait asymptotically
-($p_W\to1$) without the deadline-completion probability vanishing, because
-the waiting-time scale remains finite. The same approximations are uniform when \(c\) ranges over any fixed compact
-subset of \((0,\infty)\), so the finite-load spare-capacity threshold is
-\(c^*+\varepsilon_A\) with \(\varepsilon_A\to0\); integer rounding gives
-\eqref{eq:safety-margin}. Strict monotonicity of $H_c$ follows by stochastic
-ordering of $\mathrm{Exp}(c)$.
+For the proof, let \(c_n=M_n-A_n\) and \(X_n\sim\mathrm{Pois}(A_n)\).
+Erlang-C rewrites as
+\(p_W^{-1}=1+(c_n/M_n)P(X_n\le M_n-1)/P(X_n=M_n)\). Since
+\(M_n=A_n+O(1)\), standard central/local Poisson approximations make the
+added term \(O(A_n^{-1/2})\), so \(p_W\to1\). Conditional waiting remains
+\(\mathrm{Exp}(c_n)\), hence \(\widetilde Q_{M_n}\to H_c\). Uniformity
+over bounded positive \(c\) gives the vanishing threshold correction in
+\eqref{eq:safety-margin}; strict monotonicity of \(H_c\) follows from
+stochastic ordering of \(\mathrm{Exp}(c)\).
 
 For a fleet,
 $A_N=N\ell[\pi_Nr+(1-\pi_N)f]$, where
@@ -419,14 +390,13 @@ P(T_J\le D)=\frac{E[K_D]}{b}
 \le \min\left(1,\frac{M U_S(D)}{b}\right).
 \label{eq:burst-bound}
 \end{equation}
-Now let batches of size $b$ arrive as a Poisson process of rate
-$\beta_b=\bar\nu/b$, choosing $\bar\nu$ so that the common nominal utilization
-$\rho=\bar\nu E[S]/M<1$. Every system then has the same mean alert rate
-$\bar\nu$ and the same subcritical utilization $\rho$, while the bound in
-\eqref{eq:burst-bound} tends to zero as $b\to\infty$; residual backlog can
-only worsen it. Thus average utilization alone provides no positive uniform
-lower bound on deadline completion under synchronized demand. For exponential
-service, $U_S(D)=\mu D$, recovering the earlier $M\mu D/b$ bound exactly.
+Let batches of size \(b\) instead arrive as a Poisson process of rate
+\(\beta_b=\bar\nu/b\), with fixed subcritical utilization
+\(\rho=\bar\nu E[S]/M<1\). Mean alert rate and utilization are then identical
+for every \(b\), while \eqref{eq:burst-bound} tends to zero; residual backlog
+can only worsen it. Thus utilization alone gives no positive uniform deadline
+guarantee under synchronized demand. For exponential service,
+\(U_S(D)=\mu D\), recovering the \(M\mu D/b\) bound.
 
 \textbf{Proposition 2 (uncertainty-aware feasibility certificate).}
 Write $Q_M(\nu,D;\mu)$ here to expose the service-rate dependence, and use
@@ -436,10 +406,9 @@ $\pi\in[\pi^-,\pi^+]$, $r\in[r^-,r^+]$, $f\in[f^-,f^+]$,
 $\mu\in[\mu^-,\mu^+]$, $D\in[D^-,D^+]$, $h\ge h^-$, and $a\ge a^-$,
 with $r^-\ge f^+$, so every admissible detector has \(r\ge f\) and referral
 load is nondecreasing in prevalence throughout the box. If
-$N\lambda^+[\pi^+r^++(1-\pi^+)f^+]\ge M\mu^-$, the uncertainty box
-contains a nonstationary operating point and we set $C_{\rm cert}=0$.
-Otherwise every parameter vector in this (possibly conservative) box satisfies
-$C\ge C_{\rm cert}$, where
+$N\lambda^+[\pi^+r^++(1-\pi^+)f^+]\ge M\mu^-$, the box contains a
+nonstationary point and we set $C_{\rm cert}=0$. Otherwise every admissible
+parameter vector satisfies $C\ge C_{\rm cert}$, where
 \begin{equation}
 \begin{aligned}
 C_{\rm cert}=h^-a^-\min_{r\in[r^-,r^+]} r\,Q_M\!\bigl(&
@@ -448,10 +417,10 @@ N\lambda^+[\pi^+r+(1-\pi^+)f^+],\\[-1mm]
 \end{aligned}
 \label{eq:robust-cert}
 \end{equation}
-Queue coupling shows that $Q_M$ decreases with alert rate and increases with service
-rate and deadline. Hence $C_{\rm cert}\ge C_{\min}$ certifies the entire
-uncertainty set. Only the one-dimensional minimization over $r$ remains,
-because Theorem~2 shows that referral sensitivity itself need not be monotone.
+Queue coupling makes \(Q_M\) decrease with alert rate and increase with
+service rate and deadline. Hence \(C_{\rm cert}\ge C_{\min}\) certifies the
+entire box; only the one-dimensional minimization over \(r\) remains because
+Theorem~2 makes referral sensitivity non-monotone.
 
 \textbf{Corollary 1 (finite-source sample-path dominance).}
 Suppose instead that each robot's rate-$\lambda$ candidate clock is suppressed
@@ -466,7 +435,7 @@ delay bound for matched admitted alerts under this suppression mechanism.
 \section{Evaluation}
 \label{sec:evaluation}
 
-We evaluate structural claims rather than fit a single deployment-specific parameter vector. A 95\% target is used as an illustrative engineering requirement: queue-only frontiers use \(\widetilde Q_M\ge0.95\), while referral-aware results use \(C\ge0.95\). Changing the target moves the quantitative frontier but not the theorems or qualitative comparisons. The main axes are dimensionless offered load \(A\) and normalized deadline \(d\). Unless otherwise stated, \(h=a=1\) so that experiments isolate referral and capacity effects; lower application-specific values enter multiplicatively through \(C\) and tighten the feasible region. Analytical curves use \eqref{eq:qexact}. Unless stated otherwise, queue-robustness simulations measure 50,000 alerts per replicate after a 5,000-alert burn-in, with five independent seeds. We compare Poisson arrivals with fixed batches and a symmetric two-state Markov-modulated Poisson process (MMPP; 9:1 high/low rate contrast, identical long-run mean, state-switch rate 0.12 after the \(E[S]=1\) time normalization). Service distributions are normalized to \(E[S]=1\) and include deterministic, Gamma, exponential, and lognormal families.
+We evaluate structural claims rather than fit a single deployment-specific parameter vector. A 95\% illustrative engineering target is used throughout: queue-only frontiers require \(\widetilde Q_M\ge0.95\), while referral-aware results require \(C\ge0.95\). The main axes are dimensionless offered load \(A\) and normalized deadline \(d\). Unless otherwise stated, \(h=a=1\) so that experiments isolate referral and capacity effects; lower application-specific values enter multiplicatively through \(C\) and tighten the feasible region. Analytical curves use \eqref{eq:qexact}. Unless stated otherwise, queue-robustness simulations measure 50,000 alerts per replicate after a 5,000-alert burn-in, with five independent seeds. We compare Poisson arrivals with fixed batches and a symmetric two-state Markov-modulated Poisson process (MMPP; 9:1 high/low rate contrast, identical long-run mean, state-switch rate 0.12 after the \(E[S]=1\) time normalization). Service distributions are normalized to \(E[S]=1\) and include deterministic, Gamma, exponential, and lognormal families.
 
 \textbf{Synthetic detector model.} Detector-specific experiments use a unit-variance binormal score \(Y\): \(Y\mid Z=0\sim\mathcal N(0,1)\) and \(Y\mid Z=1\sim\mathcal N(\Delta,1)\). Referring when \(Y\ge\tau\) gives \(f=\bar\Phi(\tau)\) and \(r=\bar\Phi(\tau-\Delta)\), where \(\bar\Phi(x)=1-\Phi(x)\) is the standard-normal survival function. Thus \(\Delta\) is the critical/non-critical score separation in standard deviations. We write \(L=\Lambda E[S]\) for the pre-referral candidate load, so \(A=L[\pi r+(1-\pi)f]\) after referral. Before the stress tests, we validate the discrete-event engine against the exact M/M/\(M\) expression at four \((A,M,d)\) settings; the maximum absolute discrepancy in deadline-completion probability is 0.0037.
 
@@ -499,7 +468,10 @@ Ours & critical-event end-to-end deadline guarantee & $\checkmark$ & $\checkmark
 
 \subsection{Literature-anchored supervisory timing envelope}
 
-Al-Hussaini et al. study a human supervisor making repeated tasking decisions in simulated multi-robot search-and-rescue missions \cite{alhussaini2024alerts}. Their missions take about 15--20 minutes, contain approximately 10--15 decision instances, and provide asynchronous robot updates every 1--2 minutes; participants are asked to make retasking decisions preferably within 90 s. These decision instances are not selective referrals in the sense of our model. We therefore use the observed cadence only as an \emph{all-review supervisory-demand envelope}, not as an estimate of the referral arrival rate \(\nu\). Fig.~\ref{fig:case} asks what mean service time would be compatible with a 95\% deadline-completion target if all such decision instances required human review.
+Al-Hussaini et al. study a human supervisor making repeated tasking decisions in simulated multi-robot search-and-rescue missions \cite{alhussaini2024alerts}. Their missions take about 15--20 minutes, contain approximately 10--15 decision instances, and provide asynchronous robot updates every 1--2 minutes; participants are asked to make retasking decisions preferably within 90 s. These decision instances are not selective referrals, so we use their cadence
+only as an \emph{all-review supervisory-demand envelope}, not as an estimate
+of \(\nu\). Fig.~\ref{fig:case} asks what mean service time would be compatible
+with a 95\% deadline-completion target if every instance required review.
 
 \begin{figure}[t]
     \centering
@@ -507,7 +479,8 @@ Al-Hussaini et al. study a human supervisor making repeated tasking decisions in
     \caption{One-operator timing envelope using the 90-s decision deadline and the approximate 30--60 decisions/h cadence implied by 10--15 decisions over 15--20 min in \cite{alhussaini2024alerts}.}
     \label{fig:case}
 \end{figure}
-Under the exponential baseline, a 95\% service level allows a mean review time of only about 24.0 s at 30 decisions/h, 22.5 s at 40 decisions/h, and 20.0 s at 60 decisions/h. This is deliberately not a fit to the participants or alert process in \cite{alhussaini2024alerts}; it is a timing-envelope calculation using only their reported decision cadence and stated deadline.
+Under the exponential baseline, a 95\% service level allows a mean review time of only about 24.0 s at 30 decisions/h, 22.5 s at 40 decisions/h, and 20.0 s at 60 decisions/h. This is a timing-envelope calculation from the reported cadence and deadline,
+not a fit to the participants or alert process in \cite{alhussaini2024alerts}.
 
 \subsection{Deadline-aware feasibility}
 
@@ -560,7 +533,9 @@ Despite identical mean utilization, timely completion is about 0.978 under Poiss
 \end{figure}
 Across these service families, batch-8 completion remains roughly 0.78--0.82 while the corresponding Poisson cases range from about 0.94 to 1.00. This numerically complements Theorem~4 by showing the burst penalty across several service-time families.
 
-\textbf{Mechanism checks.} The ablations behave as the theory predicts. At stable load \(A=0.9\) with one operator, finite \(d=4\) gives \(\widetilde Q_1=0.330\), whereas removing the deadline gives eventual completion probability one. At \(N=10{,}000\), otherwise fixed parameters require 2 operators when \(f=0\) but 22 when \(f=0.01\).
+\textbf{Mechanism check.} At stable load \(A=0.9\) with one operator,
+finite \(d=4\) gives \(\widetilde Q_1=0.330\), whereas removing the deadline
+restores eventual completion probability one.
 
 \subsection{Frontier-derived supervisory mitigation}
 \label{sec:qar}
@@ -591,16 +566,32 @@ At \(L=18\), held-out timely-control probabilities are 0.780 for fixed-threshold
 \section{Robotics Interpretation}
 \label{sec:scenario}
 
-We use variable-autonomy firefighting/search-and-rescue as a neutral robotics interpretation, following work on meaningful human control and alert support in this domain \cite{verhagen2024mhc,alhussaini2024alerts}. A robot may autonomously navigate, map, or inspect while a referral mechanism flags contingencies such as route blockage, uncertain victim detection, communication degradation, or safety-limit violations. In the model, \(\lambda\) is the candidate-contingency rate per robot, \(\pi\) the fraction truly requiring human judgment, \((r,f)\) the referral operating point, and \(S\) the human triage/decision time.
+We use variable-autonomy firefighting/search-and-rescue as a neutral robotics
+interpretation \cite{verhagen2024mhc,alhussaini2024alerts}. Robots may navigate,
+map, or inspect autonomously while referrals flag route blockage, uncertain
+victim detection, communication degradation, or safety-limit violations. Here
+\(\lambda\) is the per-robot contingency rate, \(\pi\) the fraction truly
+requiring human judgment, \((r,f)\) the referral operating point, and \(S\)
+human triage/decision time.
 
-This mapping also motivates correlated demand. A structural change, smoke/thermal front, communication outage, or shared localization failure can affect several robots at once, generating alerts that are not well represented by independent Poisson arrivals. The batch and MMPP experiments therefore act as common-cause stress tests rather than claims about a particular incident distribution. The systematic review in \cite{reybecerra2026review} shows that empirical HRI evidence is concentrated at much smaller team sizes than our asymptotic experiments; large \(N\) is explicitly used to expose scaling laws, not presented as a typical current deployment.
+Common-cause changes such as a smoke/thermal front, communication outage, or
+shared localization failure can affect several robots simultaneously, motivating
+the batch and MMPP stress tests. Empirical HRI studies remain concentrated at
+much smaller team sizes \cite{reybecerra2026review}; large \(N\) here exposes
+scaling laws rather than representing a typical current deployment.
 
 \section{Discussion and Limitations}
 \label{sec:discussion}
 
 The framework provides structural feasibility guarantees, not a universal cognitive model. Human correctness \(h\), intervention success \(a\), service-time distributions, event prevalence, and burst structure are application-specific and must ultimately be measured in the operational design domain. We also assume identical baseline service-time distributions for genuine and nuisance alerts and workload-independent \(h\). The analytical FCFS model is a transparent baseline rather than a prescription: Fig.~\ref{fig:policy} shows that detector-score priority and queue-aware referral can materially improve critical-event service, while the service-time ceiling and detector/base-rate constraints remain. Class-dependent service and alert-fatigue models are further extensions; if correctness deteriorates with workload, congestion effects become stronger rather than weaker.
 
-The M/M/\(M\) queue is the analytical baseline; Theorem~4 is not tied to exponential service, and the stress tests relax both Poisson arrivals and exponential service. The framework should therefore be interpreted as an architecture-level assurance method whose application-specific parameters must be calibrated in the intended operating domain. Exact point estimates are not required for certification: Proposition~2 converts conservative parameter bounds directly into a lower bound on EHC, while Corollary~1 gives sample-path delay dominance of the open-system construction for matched alerts under a common finite-source mechanism. Its design implication is joint: fleet scale, referral policy, staffing, and deadline cannot be assessed independently.
+The M/M/\(M\) queue is the analytical baseline; Theorem~4 is not tied to
+exponential service, and the stress tests relax both Poisson arrivals and
+exponential service. Application-specific parameters must still be calibrated
+in the intended operating domain, but Proposition~2 accepts conservative bounds
+rather than exact point estimates, and Corollary~1 gives sample-path delay
+dominance for a common finite-source mechanism. Fleet scale, referral policy,
+staffing, and deadline therefore cannot be assessed independently.
 
 \section{Conclusion}
 
