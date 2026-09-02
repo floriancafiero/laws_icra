@@ -513,7 +513,7 @@ With the same detector and pre-referral candidate load, the timely-control-maxim
 \end{figure}
 The finite-scale curves track the rare-event first-order term in \eqref{eq:staffing-law}; the small fixed \(\pi=10^{-4}\) used here makes the critical-event contribution visible but subdominant. For example, at \(N=10{,}000\), \(\ell=\lambda E[S]=0.2\), \(r=0.99\), and \(d=4\), the 95\% \(C\) target requires approximately 4, 12, 22, and 42 operators as FPR increases from 0.1\% to 0.5\%, 1\%, and 2\%.
 
-\subsection{Correlated demand and service-time robustness}
+\subsection{Correlated-demand robustness}
 
 \begin{figure}[t]
     \centering
@@ -521,15 +521,13 @@ The finite-scale curves track the rare-event first-order term in \eqref{eq:staff
     \caption{Identical mean offered load (\(A=1.2,M=3,\rho=0.4,d=4\)) under different temporal arrival structures. Error bars show 95\% Monte Carlo intervals.}
     \label{fig:burst}
 \end{figure}
-Despite identical mean utilization, timely completion is about 0.978 under Poisson arrivals, 0.934 for batches of four, and 0.80 for batches of eight; the MMPP also reduces performance.
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=\columnwidth]{fig5_service_robustness}
-    \caption{The burst penalty persists under deterministic, Gamma, exponential, and lognormal human service times. All distributions have mean one; Gamma/lognormal variability is indicated by coefficient of variation (CV).}
-    \label{fig:service}
-\end{figure}
-Across these service families, batch-8 completion remains roughly 0.78--0.82 while the corresponding Poisson cases range from about 0.94 to 1.00. This numerically complements Theorem~4 by showing the burst penalty across several service-time families.
+Despite identical mean utilization, timely completion is about 0.978 under
+Poisson arrivals, 0.934 for batches of four, and 0.80 for batches of eight;
+the MMPP also reduces performance. Repeating the Poisson and batch-8 cases
+with deterministic, Gamma, exponential, and lognormal mean-one service times
+gives batch-8 completion of roughly 0.78--0.82 versus about 0.94--1.00 for
+Poisson arrivals, numerically complementing the distribution-general bound in
+Theorem~4.
 
 \textbf{Mechanism check.} At stable load \(A=0.9\) with one operator,
 finite \(d=4\) gives \(\widetilde Q_1=0.330\), whereas removing the deadline
