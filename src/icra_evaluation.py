@@ -500,6 +500,98 @@ def fanout_validation():
     return df
 
 
+
+def exact_simulation_validation():
+    """Validate the discrete-event engine against the exact M/M/M result."""
+    rows = []
+    for A, M, d in [(0.5, 1, 4.0), (1.0, 2, 4.0), (2.5, 4, 4.0), (5.0, 8, 4.0)]:
+        vals = [
+            simulate_queue(
+                "poisson", "exponential", A, M, d,
+                n=50000, seed=SEED + 7000 * j + M
+            )
+            for j in range(5)
+        ]
+        exact = q_dimless(A, M, d)
+        mean = float(np.mean(vals))
+        rows.append(
+            {
+                "A": A,
+                "M": M,
+                "d": d,
+                "exact_Q": exact,
+                "MC_Q_mean": mean,
+                "MC_Q_sd": float(np.std(vals, ddof=1)),
+                "absolute_error": abs(mean - exact),
+            }
+        )
+    df = pd.DataFrame(rows)
+    df.to_csv(TAB / "simulation_exact_validation.csv", index=False)
+    return df
+
+
+def ablation_summary():
+    """Compact mechanism checks supporting the main claims."""
+    rows = []
+
+    # Deadline ablation at fixed stable utilization.
+    A, M = 0.9, 1
+    rows.append({
+        "ablation": "finite deadline",
+        "setting": "A=0.9, M=1, d=4",
+        "metric": q_dimless(A, M, 4.0),
+    })
+    rows.append({
+        "ablation": "deadline removed",
+        "setting": "A=0.9, M=1, d=infinity",
+        "metric": 1.0,
+    })
+
+    # False-positive burden at fixed rare-event deployment scale.
+    for fpr in [0.0, 0.001, 0.01]:
+        rows.append({
+            "ablation": "false-positive burden",
+            "setting": f"N=10000, FPR={fpr}",
+            "metric": minimum_staffing(
+                10000, 0.2, 1e-4, 0.99, fpr, 4.0
+            ),
+        })
+
+    # Arrival correlation at exactly the same mean offered load.
+    for process in ["poisson", "batch4", "batch8"]:
+        vals = [
+            simulate_queue(
+                process, "exponential", 1.2, 3, 4.0,
+                n=50000, seed=SEED + 9000 * j + len(process)
+            )
+            for j in range(5)
+        ]
+        rows.append({
+            "ablation": "arrival correlation",
+            "setting": f"{process}, A=1.2, M=3, d=4",
+            "metric": float(np.mean(vals)),
+        })
+
+    # Capacity changes the optimal detector operating point.
+    thresholds = np.linspace(-1.0, 6.0, 1401)
+    for M in [2, 4, 8]:
+        best = (-1.0, None)
+        for threshold in thresholds:
+            r, fpr = binormal_roc(threshold, 3.0)
+            A = 20.0 * (1e-3 * r + (1 - 1e-3) * fpr)
+            C = r * q_dimless(A, M, 4.0)
+            if C > best[0]:
+                best = (C, r)
+        rows.append({
+            "ablation": "supervisory capacity",
+            "setting": f"M={M}, optimal TPR",
+            "metric": best[1],
+        })
+
+    df = pd.DataFrame(rows)
+    df.to_csv(TAB / "ablation_summary.csv", index=False)
+    return df
+
 def main():
     figure_feasibility()
     figure_oversight_paradox()
@@ -508,6 +600,8 @@ def main():
     figure_general_service_robustness()
     counterexample_table()
     fanout_validation()
+    exact_simulation_validation()
+    ablation_summary()
 
     print("ICRA evaluation regenerated.")
     print("Figures:", FIG)
