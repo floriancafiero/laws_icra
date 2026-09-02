@@ -674,12 +674,10 @@ def figure_robotics_case_study():
                 "deadline_s": deadline_s,
                 "Q": q,
                 "empirical_status": (
-                    "lower-envelope from 10 decisions / 15-20 min"
-                    if rate_h in [30, 40]
-                    else "denser stress case"
+                    "approximate cadence implied by 10-15 decisions / 15-20 min"
                 ),
             })
-        label = f"{rate_h}/h" + ("" if rate_h < 60 else " stress")
+        label = f"{rate_h}/h"
         plt.plot(service_s, qvals, label=label)
 
     plt.axhline(TARGET, linestyle="--", linewidth=0.8, label="95% target")

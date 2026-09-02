@@ -253,10 +253,10 @@ Al-Hussaini et al. study a human supervisor making repeated tasking decisions in
 \begin{figure}[t]
     \centering
     \includegraphics[width=\columnwidth]{../results/figures/icra/fig6_robotics_case_study.pdf}
-    \caption{One-operator timing envelope using the 90-s decision deadline and the lower-envelope decision rates implied by \cite{alhussaini2024alerts}. The 60/h line is a denser stress case, not an empirical estimate.}
+    \caption{One-operator timing envelope using the 90-s decision deadline and the approximate 30--60 decisions/h cadence implied by 10--15 decisions over 15--20 min in \cite{alhussaini2024alerts}. These are all-review decision instances, not selective-referral arrivals.}
     \label{fig:case}
 \end{figure}
-Under the exponential baseline, a 95\% service level allows a mean review time of only about 24.0 s at 30 decisions/h and 22.5 s at 40 decisions/h (20.0 s at the 60/h stress rate). This is deliberately not a fit to the participants or alert process in \cite{alhussaini2024alerts}; it is a timing-envelope calculation using only their observed mission cadence and stated decision deadline.
+Under the exponential baseline, a 95\% service level allows a mean review time of only about 24.0 s at 30 decisions/h, 22.5 s at 40 decisions/h, and 20.0 s at 60 decisions/h. This is deliberately not a fit to the participants or alert process in \cite{alhussaini2024alerts}; it is a timing-envelope calculation using only their reported decision cadence and stated deadline.
 
 \subsection{Deadline-aware feasibility}
 
@@ -276,7 +276,7 @@ At normalized deadline \(d=4\), the largest offered loads meeting the target are
     \caption{Oversight Paradox along a synthetic binormal ROC (\(d'=3\), \(\pi=10^{-3}\), pre-referral load \(L=\Lambda E[S]=20\), \(d=4\), \(h=a=1\)). The system-optimal operating point depends on supervisory capacity.}
     \label{fig:paradox}
 \end{figure}
-With the same detector and pre-escalation workload, the EHC-maximizing TPR rises from about 0.91 with two operators to 0.97 with four and 0.99 with eight. Thus the operating point that is best for the detector in isolation is not generally best for the supervisory architecture.
+With the same detector and pre-escalation workload, the timely-control-maximizing TPR rises from about 0.91 with two operators to 0.97 with four and 0.99 with eight. Thus the operating point that is best for the detector in isolation is not generally best for the supervisory architecture.
 
 \subsection{False-positive scaling}
 
@@ -326,7 +326,7 @@ We test QAR on synthetic two-state MMPP candidate streams with \(\pi=.01\), \(d'
     \label{fig:policy}
 \end{figure}
 
-At \(L=18\), fixed-threshold FCFS achieves about 0.79 timely control, QAR about 0.84, risk-priority about 0.86, and QAR plus risk-priority about 0.87. QAR also limits backlog: when combined with priority it reduces average queue size by roughly fourfold relative to fixed-threshold risk-priority while slightly improving timely control. The policy is deliberately simple; its role is to show that the feasibility analysis yields an actionable supervisory design lever rather than only a post-hoc diagnostic.
+At \(L=18\), held-out timely-control probabilities are 0.780 for fixed-threshold FCFS, 0.841 for QAR, 0.856 for risk-priority, and 0.862 for QAR plus priority. QAR also limits backlog: relative to fixed FCFS it reduces the mean maximum outstanding-alert count from 18.8 to 7.0; adding QAR to risk-priority reduces it from 26.8 to 14.6 while slightly improving timely control. The policy is deliberately simple; its role is to show that the feasibility analysis yields an actionable supervisory design lever rather than only a post-hoc diagnostic.
 
 \begin{table}[t]
 \centering
