@@ -93,7 +93,7 @@ def figure_architecture():
     arrow(0.445,0.48,0.445,0.28)
     arrow(0.83,0.48,0.83,0.28)
 
-    ax.text(0.555,0.82,r"$\\nu=\\Lambda[\\pi r+(1-\\pi)f]$",
+    ax.text(0.555,0.82,"$\\nu=\\Lambda[\\pi r+(1-\\pi)f]$",
             ha="center",va="center",fontsize=8)
     fig.tight_layout(pad=0.15)
     fig.savefig(FIG / "fig0_architecture.pdf")
