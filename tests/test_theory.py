@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from simulations import q_mm_m
-from icra_evaluation import max_offered_load
+from icra_evaluation import asymptotic_safety_margin, max_offered_load
 
 
 class TheorySanityTests(unittest.TestCase):
@@ -36,6 +36,14 @@ class TheorySanityTests(unittest.TestCase):
 
     def test_feasibility_frontier_known_point(self):
         self.assertAlmostEqual(max_offered_load(4, 4.0), 2.9414259939, places=6)
+
+    def test_constant_safety_margin_limit(self):
+        c_star = asymptotic_safety_margin(4.0, 0.95)
+        self.assertAlmostEqual(c_star, 1.4997567674, places=6)
+
+        margins = [m - max_offered_load(m, 4.0, 0.95) for m in [8, 16, 32, 64, 128]]
+        self.assertTrue(all(x < y for x, y in zip(margins, margins[1:])))
+        self.assertLess(abs(margins[-1] - c_star), 0.12)
 
     def test_fanout_recovery_identity(self):
         rst, it = 23.41, 4.56
