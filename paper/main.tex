@@ -133,14 +133,15 @@ For fixed \(M,\mu,D\), the stationary M/M/\(M\) completion probability is contin
 Q_M(\nu_M^*,D)=\frac{C_{\min}}{rha}.
 \end{equation}
 This immediately yields two design quantities,
-\begin{equation}
-N_{\max}=\left\lfloor
+\begin{align}
+N_{\max}
+&=\left\lfloor
 \frac{\nu_M^*}{\lambda[\pi r+(1-\pi)f]}
-\right\rfloor,
-\quad
-M_{\min}=\min\{M:C\ge C_{\min}\}.
+\right\rfloor,\\
+M_{\min}
+&=\min\{M:C\ge C_{\min}\}.
 \label{eq:design}
-\end{equation}
+\end{align}
 A coupling argument proves monotonicity: adding arrivals while preserving all shared arrival and service times cannot make any shared FCFS completion earlier. Continuity follows from \eqref{eq:erlangc}--\eqref{eq:qexact}; as \(\nu\uparrow M\mu\), \(p_W\to1\) and the conditional waiting rate tends to zero. Thus the intermediate value theorem gives a unique \(\nu_M^*\). Adding a server cannot delay a completion, so the minimum feasible staffing is also a monotone one-dimensional search.
 
 \subsection{Oversight paradox}
