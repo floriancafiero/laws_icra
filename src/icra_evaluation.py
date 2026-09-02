@@ -191,6 +191,29 @@ def max_offered_load(M: int, d: float, target: float = TARGET) -> float:
     return lo
 
 
+def asymptotic_safety_margin(d: float, target: float = TARGET) -> float:
+    """c* such that P(Exp(c*) + Exp(1) <= d) equals the target."""
+    ceiling = 1.0 - math.exp(-d)
+    if not 0.0 < target < ceiling:
+        return math.nan
+
+    def h_c(c):
+        if abs(c - 1.0) < 1e-10:
+            return 1.0 - math.exp(-d) * (1.0 + d)
+        return 1.0 - (math.exp(-c * d) - c * math.exp(-d)) / (1.0 - c)
+
+    lo, hi = 1e-10, 1.0
+    while h_c(hi) < target:
+        hi *= 2.0
+    for _ in range(100):
+        mid = 0.5 * (lo + hi)
+        if h_c(mid) < target:
+            lo = mid
+        else:
+            hi = mid
+    return 0.5 * (lo + hi)
+
+
 def minimum_staffing(
     N: int,
     candidate_load_per_system: float,
