@@ -157,7 +157,7 @@ P(\text{correct response}\mid Z=1,R=1,W+S\leq D)
 \end{equation}
 be the probability that a timely human response is correct, and define
 \begin{equation}
-a=P(\text{intended effect}\mid Z=1,R=1,W+S\le D,\text{ correct response}).
+a=P(\text{intended effect}\mid Z=1,R=1,W+S\le D,\text{ response correct}).
 \end{equation}
 We assume \(h\) and \(a\) are constant with respect to the current queue state
 in the analytical baseline. Using the EHC definition in \eqref{eq:ehc}, the
@@ -290,7 +290,7 @@ Fix $M,\mu,D>0$. On $0\le\nu<M\mu$, $Q_M(\nu,D)$ is continuous and strictly
 decreasing in $\nu$, with
 \begin{equation}
 Q_M(0,D)=1-e^{-\mu D},\qquad
-\lim_{\nu\uparrow M\mu}Q_M(\nu,D)=0,
+\lim_{\nu\uparrow M\mu}Q_M(\nu,D)=0.
 \end{equation}
 Consequently, whenever
 $0<q^*=C_{\min}/(rha)<1-e^{-\mu D}$, there is a unique
@@ -338,7 +338,7 @@ $\nu(s)=\Lambda[\pi r(s)+(1-\pi)f(s)]$, direct differentiation gives
 \end{equation}
 Thus greater detector sensitivity reduces end-to-end control exactly when its
 relative gain in critical-event coverage is smaller than the induced
-congestion loss. If \(r'(s)>0\) and the detector receiver-operating-characteristic (ROC) curve
+congestion loss. If \(r'(s)>0\) and the detector receiver operating characteristic (ROC) curve
 is written $f=f(r)$, the same condition
 becomes
 \begin{equation}
@@ -430,8 +430,9 @@ N\lambda^+[\pi^+r+(1-\pi^+)f^+],\\[-1mm]
 \end{aligned}
 \label{eq:robust-cert}
 \end{equation}
-Here the certificate is defined as zero whenever the worst-case alert rate is
-not stationary, i.e., when it reaches or exceeds $M\mu^-$. Otherwise, queue
+Here the certificate is defined as zero whenever
+$N\lambda^+[\pi^+r^++(1-\pi^+)f^+]\ge M\mu^-$, since the uncertainty box
+then contains a nonstationary operating point. Otherwise, queue
 coupling shows that $Q_M$ decreases with alert rate and increases with service
 rate and deadline. Hence $C_{\rm cert}\ge C_{\min}$ certifies the entire
 uncertainty set. Only the one-dimensional minimization over $r$ remains,
@@ -449,7 +450,7 @@ conservative deadline model for this common finite-source mechanism.
 \section{Evaluation}
 \label{sec:evaluation}
 
-We evaluate structural claims rather than fit a single deployment-specific parameter vector. A 95\% target is used as an illustrative engineering requirement: queue-only frontiers use \(\widetilde Q_M\ge0.95\), while referral-aware results use \(C\ge0.95\). Changing the target moves the quantitative frontier but not the theorems or qualitative comparisons. The main axes are dimensionless offered load \(A\) and normalized deadline \(d\). Unless otherwise stated, \(h=a=1\) so that experiments isolate referral and capacity effects; lower application-specific values simply tighten the feasibility ceiling. Analytical curves use \eqref{eq:qexact}. Simulation-only results use 50,000 post-burn-in alerts per replicate after a 5,000-alert burn-in, with five independent seeds. We compare Poisson arrivals with fixed batches and a symmetric two-state Markov-modulated Poisson process (MMPP; 9:1 high/low rate contrast, identical long-run mean). Service distributions are normalized to \(E[S]=1\) and include deterministic, Gamma, exponential, and lognormal families. Synthetic detector experiments use a unit-variance binormal score \(Y\): \(Y\mid Z=0\sim\mathcal N(0,1)\) and \(Y\mid Z=1\sim\mathcal N(d',1)\); referral at threshold \(\tau\) gives \(f=\bar\Phi(\tau)\) and \(r=\bar\Phi(\tau-d')\). Thus \(d'\) is the critical/non-critical score separation in standard deviations. We write \(L=\Lambda E[S]\) for the pre-referral candidate load. Before the stress tests, we validate the discrete-event engine against the exact M/M/\(M\) expression at four \((A,M,d)\) settings; the maximum absolute discrepancy in deadline-completion probability is 0.0037.
+We evaluate structural claims rather than fit a single deployment-specific parameter vector. A 95\% target is used as an illustrative engineering requirement: queue-only frontiers use \(\widetilde Q_M\ge0.95\), while referral-aware results use \(C\ge0.95\). Changing the target moves the quantitative frontier but not the theorems or qualitative comparisons. The main axes are dimensionless offered load \(A\) and normalized deadline \(d\). Unless otherwise stated, \(h=a=1\) so that experiments isolate referral and capacity effects; lower application-specific values simply tighten the feasibility ceiling. Analytical curves use \eqref{eq:qexact}. Simulation-only results use 50,000 post-burn-in alerts per replicate after a 5,000-alert burn-in, with five independent seeds. We compare Poisson arrivals with fixed batches and a symmetric two-state Markov-modulated Poisson process (MMPP; 9:1 high/low rate contrast, identical long-run mean). Service distributions are normalized to \(E[S]=1\) and include deterministic, Gamma, exponential, and lognormal families. Synthetic detector experiments use a unit-variance binormal score \(Y\): \(Y\mid Z=0\sim\mathcal N(0,1)\) and \(Y\mid Z=1\sim\mathcal N(d',1)\); referral at threshold \(\tau\) gives \(f=\bar\Phi(\tau)\) and \(r=\bar\Phi(\tau-d')\), where \(\bar\Phi(x)=1-\Phi(x)\) is the standard-normal survival function. Thus \(d'\) is the critical/non-critical score separation in standard deviations. We write \(L=\Lambda E[S]\) for the pre-referral candidate load. Before the stress tests, we validate the discrete-event engine against the exact M/M/\(M\) expression at four \((A,M,d)\) settings; the maximum absolute discrepancy in deadline-completion probability is 0.0037.
 
 \subsection{Classical fan-out as a special case}
 
@@ -491,6 +492,9 @@ Al-Hussaini et al. study a human supervisor making repeated tasking decisions in
 Under the exponential baseline, a 95\% service level allows a mean review time of only about 24.0 s at 30 decisions/h, 22.5 s at 40 decisions/h, and 20.0 s at 60 decisions/h. This is deliberately not a fit to the participants or alert process in \cite{alhussaini2024alerts}; it is a timing-envelope calculation using only their reported decision cadence and stated deadline.
 
 \subsection{Deadline-aware feasibility}
+
+Let \(A^*(M,d)\) denote the largest offered load satisfying
+\(\widetilde Q_M(A,d)\ge0.95\).
 
 \begin{figure}[t]
     \centering
@@ -548,12 +552,12 @@ The frontier suggests two direct mitigations when demand approaches human capaci
 \tau(q)=\tau_0+\gamma[q-M]_+,
 \label{eq:qar}
 \end{equation}
-where \(q\) is the number of outstanding alerts (in service plus waiting) immediately before the referral decision, \(\tau_0\) is the baseline detector threshold, and \(\gamma\ge0\) controls how strongly the threshold reacts to queued work. The threshold therefore becomes more selective only after all operators are occupied and a queue forms. This switch has a direct queue-state interpretation in the baseline: conditional on \(q<M\), a newly referred alert starts service immediately, whereas for \(q\ge M\) it must wait for \(q-M+1\) service completions. Writing \(W_q\) for its waiting time in that state,
+where \([x]_+=\max(x,0)\), \(q\) is the number of outstanding alerts (in service plus waiting) immediately before the referral decision, \(\tau_0\) is the baseline detector threshold, and \(\gamma\ge0\) controls how strongly the threshold reacts to queued work. The threshold therefore becomes more selective only after all operators are occupied and a queue forms. This switch has a direct queue-state interpretation in the baseline: conditional on \(q<M\), a newly referred alert starts service immediately, whereas for \(q\ge M\) it must wait for \(q-M+1\) service completions. Writing \(W_q\) for its waiting time in that state,
 \begin{equation}
-W_q\sim\operatorname{Erlang}(q-M+1,M\mu).
+W_q\sim\operatorname{Erlang}(q-M+1,M\mu),
 \label{eq:state-wait}
 \end{equation}
-Thus \(P(W_q+S\le D)\) decreases monotonically with backlog. The QAR rule leaves the no-backlog boundary at \(\tau_0\) and tightens once a waiting queue is already present.
+with shape \(q-M+1\) and rate \(M\mu\). Thus \(P(W_q+S\le D)\) decreases monotonically with backlog. The QAR rule leaves the no-backlog boundary at \(\tau_0\) and tightens once a waiting queue is already present.
 
 We test QAR on synthetic two-state MMPP candidate streams with \(\pi=.01\), \(d'=3\), \(M=2\), \(d=4\), and exponential mean-one service. For each policy, \(\tau_0\)---and \(\gamma\) where applicable---is selected to maximize \(C\) on three development seeds at candidate load \(L=14\), then frozen for all held-out evaluation streams. The selected \((\tau_0,\gamma)\) values are \((1.7,0)\) for fixed+FCFS, \((1.6,0)\) for score priority, \((1.5,.30)\) for QAR, and \((1.5,.05)\) for QAR+score priority.
 
