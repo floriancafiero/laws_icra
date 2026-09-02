@@ -32,10 +32,17 @@ jobs:
           unzip -j -o /tmp/ieeeconf.zip '*ieeeconf.cls' -d /tmp/ieeeconf
           test -f /tmp/ieeeconf/ieeeconf.cls
 
-      - name: Install PDF rasterizer
+      - name: Verify generated figure fonts
         run: |
           sudo apt-get update
           sudo apt-get install -y poppler-utils
+          for f in results/figures/icra/*.pdf; do
+            if pdffonts "$f" | grep -q "Type 3"; then
+              echo "PaperPlaza compliance failure: Type 3 font found in $f."
+              pdffonts "$f"
+              exit 1
+            fi
+          done
 
       - name: Assemble self-contained Overleaf project
         run: |
@@ -44,10 +51,7 @@ jobs:
           cp paper/main.tex overleaf_bundle/main.tex
           cp paper/references.bib overleaf_bundle/references.bib
           cp /tmp/ieeeconf/ieeeconf.cls overleaf_bundle/ieeeconf.cls
-          for f in results/figures/icra/*.pdf; do
-            name="$(basename "$f" .pdf)"
-            pdftoppm -png -r 400 -singlefile "$f" "overleaf_bundle/figures/$name"
-          done
+          cp results/figures/icra/*.pdf overleaf_bundle/figures/
           cd overleaf_bundle
           python3 - <<'PY'
           from pathlib import Path
