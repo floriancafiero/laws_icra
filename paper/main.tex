@@ -317,7 +317,7 @@ The frontier suggests two direct mitigations when demand approaches human capaci
 \end{equation}
 where \(q\) is the number of outstanding alerts. The threshold therefore becomes more selective only after all operators are occupied and a queue forms.
 
-We test QAR on synthetic two-state MMPP candidate streams with \(\pi=.01\), \(d'=3\), \(M=2\), \(d=4\), and exponential mean-one service. For each policy, \(\tau_0\)---and \(\gamma\) where applicable---is selected to maximize \(C\) on three development seeds at candidate load \(L=14\), then frozen for all held-out evaluation streams. The selected \((\tau_0,\gamma)\) values are \((1.7,0)\) for fixed+FCFS, \((1.6,0)\) for score priority, \((1.5,.30)\) for QAR, and \((1.5,.05)\) for QAR+priority.
+We test QAR on synthetic two-state MMPP candidate streams with \(\pi=.01\), \(d'=3\), \(M=2\), \(d=4\), and exponential mean-one service. For each policy, \(\tau_0\)---and \(\gamma\) where applicable---is selected to maximize \(C\) on three development seeds at candidate load \(L=14\), then frozen for all held-out evaluation streams. The selected \((\tau_0,\gamma)\) values are \((1.7,0)\) for fixed+FCFS, \((1.6,0)\) for score priority, \((1.5,.30)\) for QAR, and \((1.5,.05)\) for QAR+score priority.
 
 \begin{figure}[t]
     \centering
@@ -326,7 +326,7 @@ We test QAR on synthetic two-state MMPP candidate streams with \(\pi=.01\), \(d'
     \label{fig:policy}
 \end{figure}
 
-At \(L=18\), held-out timely-control probabilities are 0.780 for fixed-threshold FCFS, 0.841 for QAR, 0.856 for detector-score priority, and 0.862 for QAR plus priority. QAR also limits backlog: relative to fixed FCFS it reduces the mean across seeds of the maximum outstanding-alert count from 18.8 to 7.0; combined with detector-score priority, it achieves the highest \(C\) while limiting that peak backlog to 14.6. The policy is deliberately simple; its role is to show that the feasibility analysis yields an actionable supervisory design lever rather than only a post-hoc diagnostic.
+At \(L=18\), held-out timely-control probabilities are 0.780 for fixed-threshold FCFS, 0.841 for QAR, 0.856 for score priority, and 0.862 for QAR+score priority. QAR also limits backlog: relative to fixed FCFS it reduces the mean across seeds of the maximum outstanding-alert count from 18.8 to 7.0; combined with detector-score priority, it achieves the highest \(C\) while limiting that peak backlog to 14.6. The policy is deliberately simple; its role is to show that the feasibility analysis yields an actionable supervisory design lever rather than only a post-hoc diagnostic.
 
 
 
