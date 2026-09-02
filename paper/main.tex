@@ -23,7 +23,7 @@ End-to-End Capacity Guarantees for Supervisory Multi-Robot Systems
 \pagestyle{empty}
 
 \begin{abstract}
-Human-in-the-loop architectures are often treated as if providing an intervention channel were sufficient to preserve human control. This paper shows that such a guarantee is inherently system-level: referral quality, event base rates, finite supervisory capacity, human processing time, intervention deadlines, and correlated demand jointly determine whether intervention remains practically available. We define effective human control (EHC) as the probability that an oversight-critical event is referred, reviewed correctly, and acted upon before its deadline. An analytically tractable multi-server baseline defines a human-control feasible region over fleet scale, referral policy, staffing, and deadline, with four consequences. First, some targets are infeasible regardless of staffing because human service time itself imposes a hard ceiling. Second, increasing referral sensitivity can reduce EHC when additional false alerts create sufficient congestion. Third, in rare-event regimes any fixed nonzero false-positive rate induces a first-order staffing requirement linear in fleet scale. Fourth, average utilization cannot guarantee EHC under synchronized alert bursts. Dimensionless simulations with non-Poisson arrivals and non-exponential service distributions show that the main effects persist beyond the analytical assumptions. Finally, we instantiate a queue-aware referral policy motivated by the capacity analysis and show on held-out bursty-demand simulations that capacity-aware referral and detector-score scheduling improve timely critical-event service over fixed-threshold FCFS.
+Human-in-the-loop architectures are often treated as if providing an intervention channel were sufficient to preserve human control. This paper shows that such a guarantee is inherently system-level: referral quality, event base rates, finite supervisory capacity, human processing time, intervention deadlines, and correlated demand jointly determine whether intervention remains practically available. We define effective human control (EHC) as the probability that an oversight-critical event is referred, reviewed correctly, and acted upon before its deadline. An analytically tractable multi-server baseline defines a human-control feasible region over fleet scale, referral policy, staffing, and deadline, with four consequences. First, some targets are infeasible regardless of staffing because human service time itself imposes a hard ceiling. Second, increasing referral sensitivity can reduce EHC when additional false alerts create sufficient congestion. Third, large systems require offered load plus only a deadline-dependent constant safety margin; in rare-event regimes this yields staffing linear in fleet scale with false-positive rate as the first-order coefficient. Fourth, no positive deadline guarantee can follow from average utilization alone under sufficiently synchronized demand, for arbitrary nonexplosive service-time distributions. The same monotonicities give a conservative certificate under bounded parameter uncertainty. Dimensionless simulations with non-Poisson arrivals and non-exponential service distributions show that the main effects persist beyond the analytical assumptions. Finally, we instantiate a queue-aware referral policy motivated by the capacity analysis and show on held-out bursty-demand simulations that capacity-aware referral and detector-score scheduling improve timely critical-event service over fixed-threshold FCFS.
 \end{abstract}
 
 \section{Introduction}
@@ -41,10 +41,10 @@ We connect referral reliability, base rates, finite human capacity, and deadline
 \begin{enumerate}
     \item a deadline-aware feasibility ceiling and unique alert-rate capacity for a finite operator pool;
     \item an \emph{Oversight Paradox}, in which increasing referral sensitivity can reduce end-to-end control;
-    \item a rare-event scaling law showing that fixed nonzero false-positive rates induce staffing linear in fleet scale;
-    \item a proof that equal average utilization can produce arbitrarily different deadline-constrained control under synchronized demand.
+    \item a constant-safety-margin theorem at large offered load, with a rare-event corollary showing that fixed nonzero false-positive rates induce staffing linear in fleet scale;
+    \item a service-distribution-independent proof that equal average utilization can produce arbitrarily different deadline-constrained control under synchronized demand.
 \end{enumerate}
-We further instantiate the feasible-region analysis as queue-aware referral with detector-score scheduling and evaluate it on held-out bursty-demand simulations.
+We also give an uncertainty-aware feasibility certificate from bounded parameter estimates. We further instantiate the feasible-region analysis as queue-aware referral with detector-score scheduling and evaluate it on held-out bursty-demand simulations.
 
 \begin{figure*}[t]
     \centering
@@ -344,48 +344,97 @@ becomes
 \end{equation}
 Fig.~\ref{fig:paradox} illustrates this condition for a binormal ROC.
 
-\textbf{Theorem 3 (rare-event false-positive staffing law).}
-Let $\pi_N\to0$ as $N\to\infty$, while
-$\lambda,\mu,D,r,f,h,a$ remain fixed with $f>0$, and assume the target lies
-strictly below the service-time ceiling. If $M_{\min}(N)$ is the minimum
-staffing satisfying $C\ge C_{\min}$, then, with
-$\ell=\lambda E[S]=\lambda/\mu$,
+\textbf{Theorem 3 (constant safety margin and rare-event scaling).}
+Fix $d>0$ and a target
+$q^*=C_{\min}/(rha)\in(0,1-e^{-d})$. Consider any sequence with offered load
+$A_n\to\infty$ and staffing $M_n>A_n$ such that
+$M_n-A_n\to c\in(0,\infty)$. Then
+\begin{equation}
+Q_{M_n}(A_n,d)\longrightarrow H_c(d),
+\label{eq:constant-margin}
+\end{equation}
+where $H_c$ is (21)--(22) with $\delta=c$. Moreover $H_c(d)$ is continuous
+and strictly increasing in $c$, from $0$ to $1-e^{-d}$, so there is a unique
+$c^*=c^*(d,q^*)$ satisfying $H_{c^*}(d)=q^*$. Consequently, if
+$M_{\min}(A)$ is the minimum integer staffing meeting the target,
+\begin{equation}
+M_{\min}(A)=\left\lceil A+c^*+o(1)\right\rceil.
+\label{eq:safety-margin}
+\end{equation}
+To see \eqref{eq:constant-margin}, let $c_n=M_n-A_n$ and
+$X_n\sim\mathrm{Pois}(A_n)$. Erlang-C can be rewritten as
+$p_W^{-1}=1+(c_n/M_n)P(X_n\le M_n-1)/P(X_n=M_n)$. The Poisson central and
+local limit estimates make the added term $O(A_n^{-1/2})$, so $p_W\to1$;
+conditional waiting remains exponential with rate $c_n\to c$, hence
+$Q_{M_n}\to H_c$. Strict monotonicity of $H_c$ follows by stochastic ordering
+of $\mathrm{Exp}(c)$. The staffing statement then follows by applying the
+limit on either side of $c^*$.
+
+For a fleet,
+$A_N=N\ell[\pi_Nr+(1-\pi_N)f]$, where
+$\ell=\lambda E[S]=\lambda/\mu$. If $\pi_N\to0$ and fixed $f>0$,
+\eqref{eq:safety-margin} immediately yields the first-order law
 \begin{equation}
 \lim_{N\to\infty}\frac{M_{\min}(N)}{N}=\ell f.
 \label{eq:staffing-law}
 \end{equation}
-The lower bound follows from stability:
-$M_{\min}(N)>\nu_N/\mu$ and
-$\nu_N/(N\mu)\to\ell f$. For the upper bound, fix any
-$\rho_0<1$ and choose
-$\widetilde M_N=\lceil\nu_N/(\rho_0\mu)\rceil$.
-At fixed subcritical utilization the Erlang-C waiting probability vanishes in
-the many-server limit, so timely completion approaches the service-only
-ceiling and $\widetilde M_N$ is eventually feasible. Letting
-$\rho_0\uparrow1$ matches the lower bound. More generally, bounded staffing
-as $N\to\infty$ requires
-$\pi_Nr+(1-\pi_N)f_N=O(N^{-1})$; if also $\pi_N=O(N^{-1})$, then necessarily
+If in addition $\pi_N=O(N^{-1})$, then the stronger statement
+$M_{\min}(N)=N\ell f+O(1)$ holds. Conversely, bounded staffing requires
+$\pi_Nr+(1-\pi_N)f_N=O(N^{-1})$; when $\pi_N=O(N^{-1})$, necessarily
 $f_N=O(N^{-1})$.
 
-\textbf{Theorem 4 (average utilization cannot certify deadlines).}
+\textbf{Theorem 4 (distribution-free burst impossibility).}
+Let service times be iid, strictly positive, and nonexplosive, and define the
+renewal function
+\begin{equation}
+U_S(D)=\sum_{k\ge1}P(S_1+\cdots+S_k\le D)<\infty.
+\end{equation}
 Suppose a batch of $b$ exchangeable alerts arrives simultaneously to $M$
-initially idle exponential servers of rate $\mu$. If $K_D$ is the number of
-batch alerts completed by time $D$, then even an infinite backlog after the
-batch gives at most $M\mu D$ expected service completions. For a uniformly
-selected alert $J$ from the batch,
+initially idle servers. If $K_D$ is the number of batch alerts completed by
+$D$, continuously busy servers dominate the actual system and therefore
+$E[K_D]\le M U_S(D)$. For a uniformly selected alert $J$ from the batch,
 \begin{equation}
 P(T_J\le D)=\frac{E[K_D]}{b}
-\le \min\left(1,\frac{M\mu D}{b}\right).
+\le \min\left(1,\frac{M U_S(D)}{b}\right).
 \label{eq:burst-bound}
 \end{equation}
 Now let batches of size $b$ arrive as a Poisson process of rate
 $\beta_b=\bar\nu/b$. Every system has the same mean alert rate $\bar\nu$ and
-the same nominal utilization $\bar\nu/(M\mu)$, while the favorable bound in
-\eqref{eq:burst-bound} tends to zero as $b\to\infty$; residual backlog can only
-worsen it. Hence equal average utilization admits no positive uniform lower
-bound on deadline completion under synchronized demand. The stress tests in
-Sec.~\ref{sec:evaluation} examine how this effect persists beyond exponential
-service.
+the same nominal utilization $\bar\nu E[S]/M$, while the bound in
+\eqref{eq:burst-bound} tends to zero as $b\to\infty$; residual backlog can
+only worsen it. Thus average utilization alone provides no positive uniform
+lower bound on deadline completion under synchronized demand. For exponential
+service, $U_S(D)=\mu D$, recovering the earlier $M\mu D/b$ bound exactly.
+
+\textbf{Proposition 2 (uncertainty-aware feasibility certificate).}
+Write $Q_M(\nu,D;\mu)$ here to expose the service-rate dependence. Suppose
+calibration provides bounds
+$\lambda\in[\lambda^-,\lambda^+]$,
+$\pi\in[\pi^-,\pi^+]$, $r\in[r^-,r^+]$, $f\in[f^-,f^+]$,
+$\mu\in[\mu^-,\mu^+]$, $D\in[D^-,D^+]$, $h\ge h^-$, and $a\ge a^-$,
+with $r^-\ge f^+$. Then every parameter vector in this uncertainty box
+satisfies $C\ge C_{\rm cert}$, where
+\begin{equation}
+\begin{aligned}
+C_{\rm cert}=h^-a^-\min_{r\in[r^-,r^+]} r\,Q_M\!\bigl(&
+N\lambda^+[\pi^+r+(1-\pi^+)f^+],\\[-1mm]
+& D^-;\mu^-\bigr).
+\end{aligned}
+\label{eq:robust-cert}
+\end{equation}
+This follows from queue coupling: $Q_M$ decreases with alert rate and increases
+with service rate and deadline. Hence $C_{\rm cert}\ge C_{\min}$ certifies the
+entire uncertainty set. Only the one-dimensional minimization over $r$ remains,
+because Theorem~2 shows that referral sensitivity itself need not be monotone.
+
+\textbf{Corollary 1 (finite-source conservatism).}
+Suppose instead that each robot's rate-$\lambda$ candidate clock is suppressed
+while that robot has an outstanding referred alert. Couple the finite-source
+and open systems with the same clocks, referral marks, and service requirements.
+Every finite-source arrival is then also an open-system arrival, so FCFS
+workload in the open system dominates sample-path-wise. Consequently
+$Q_M^{\rm finite}(D)\ge Q_M^{\rm open}(D)$: the open-Poisson baseline is a
+conservative deadline model for this common finite-source mechanism.
 
 \section{Evaluation}
 \label{sec:evaluation}
@@ -438,7 +487,7 @@ Under the exponential baseline, a 95\% service level allows a mean review time o
     \caption{Maximum utilization \(\rho^*=A^*/M\) compatible with a 95\% deadline-completion target. Ordinary stability only requires \(\rho<1\).}
     \label{fig:frontier}
 \end{figure}
-At normalized deadline \(d=4\), the largest offered loads meeting the target are approximately \(A^*=0.25,1.07,2.94,6.84\) for \(M=1,2,4,8\), corresponding to only 25\%, 54\%, 74\%, and 86\% of the nominal stability limit. The gap is largest when deadlines are tight.
+At normalized deadline \(d=4\), the largest offered loads meeting the target are approximately \(A^*=0.25,1.07,2.94,6.84\) for \(M=1,2,4,8\), corresponding to only 25\%, 54\%, 74\%, and 86\% of the nominal stability limit. The gap is largest when deadlines are tight. Theorem~3 explains why this frontier nevertheless approaches the stability line at scale: for a 95\% target with \(d=4\), the limiting safety margin is only \(c^*\approx1.50\) units of offered load.
 
 \subsection{Detector--capacity co-design}
 
@@ -517,7 +566,7 @@ This mapping also motivates correlated demand. A structural change, smoke/therma
 
 The framework provides structural feasibility guarantees, not a universal cognitive model. Human correctness \(h\), intervention success \(a\), service-time distributions, event prevalence, and burst structure are application-specific and must ultimately be measured in the operational design domain. We also assume identical baseline service-time distributions for genuine and nuisance alerts and workload-independent \(h\). The analytical FCFS model is a transparent baseline rather than a prescription: Fig.~\ref{fig:policy} shows that detector-score priority and queue-aware referral can materially improve critical-event service, while the service-time ceiling and detector/base-rate constraints remain. Class-dependent service and alert-fatigue models are further extensions; if correctness deteriorates with workload, congestion effects become stronger rather than weaker.
 
-The M/M/\(M\) model is used only for closed-form analysis; the stress tests relax both Poisson arrivals and exponential service. The framework should therefore be interpreted as an architecture-level assurance method whose application-specific parameters must be calibrated in the intended operating domain. Its design implication is joint: fleet scale, referral policy, staffing, and deadline cannot be assessed independently.
+The M/M/\(M\) model is used only for closed-form analysis; Theorem~4 is service-distribution independent and the stress tests relax both Poisson arrivals and exponential service. The framework should therefore be interpreted as an architecture-level assurance method whose application-specific parameters must be calibrated in the intended operating domain. Exact point estimates are not required for certification: Proposition~2 converts conservative parameter bounds directly into a lower bound on EHC, while Corollary~1 shows that the open-source approximation is conservative for a common finite-source mechanism. Its design implication is joint: fleet scale, referral policy, staffing, and deadline cannot be assessed independently.
 
 \section{Conclusion}
 
