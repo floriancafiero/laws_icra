@@ -42,7 +42,7 @@ We connect referral reliability, base rates, finite human capacity, and deadline
     \item a deadline-aware feasibility ceiling and unique alert-rate capacity for a finite operator pool;
     \item an \emph{Oversight Paradox}, in which increasing referral sensitivity can reduce end-to-end control;
     \item a constant-safety-margin theorem at large offered load, with a rare-event corollary showing that fixed nonzero false-positive rates induce staffing linear in fleet scale;
-    \item a service-distribution-independent proof that equal average utilization can produce arbitrarily different deadline-constrained control under synchronized demand.
+    \item a burst bound, valid for general iid service distributions with finite renewal function, showing that equal average utilization can produce arbitrarily different deadline-constrained control under synchronized demand.
 \end{enumerate}
 We additionally give an uncertainty-aware feasibility certificate from bounded parameter estimates, then instantiate the feasible-region analysis as queue-aware referral with detector-score scheduling and evaluate it on held-out bursty-demand simulations.
 
@@ -281,9 +281,9 @@ C\le rha F_S(D).
 Indeed, $W\ge0$ implies
 $\{W+S\le D\}\subseteq\{S\le D\}$. Thus a target above
 $rhaF_S(D)$ is impossible regardless of staffing. In the exponential
-baseline, $F_S(D)=1-e^{-\mu D}=1-e^{-d}$. Moreover, at positive load every
-finite $M$ has a nonzero probability of waiting, so the boundary value itself
-can only be approached as $M\to\infty$.
+baseline, $F_S(D)=1-e^{-\mu D}=1-e^{-d}$. Moreover, in the positive-load
+$M/M/M$ baseline every finite $M$ has a nonzero probability of waiting, so
+the boundary value itself can only be approached as $M\to\infty$.
 
 \textbf{Theorem 1 (unique effective-control capacity).}
 Fix $M,\mu,D>0$. On $0\le\nu<M\mu$, $Q_M(\nu,D)$ is continuous and strictly
@@ -319,7 +319,7 @@ giving uniqueness.
 
 \textbf{Theorem 2 (Oversight Paradox condition).}
 Let $s$ parameterize increasing referral aggressiveness, with differentiable
-$r(s)>0$ and $f(s)$ satisfying $r'(s),f'(s)\ge0$, and remain in the stable
+$r(s)>0$ and $f(s)$ satisfying $r'(s),f'(s)\ge0$ throughout the stable
 interior. Define the congestion
 sensitivity
 \begin{equation}
@@ -372,7 +372,7 @@ local limit estimates make the added term $O(A_n^{-1/2})$, so $p_W\to1$;
 conditional waiting remains exponential with rate $c_n\to c$, hence
 $\widetilde Q_{M_n}\to H_c$. These Poisson approximations are locally uniform
 for bounded positive $c$, so the finite-load threshold in spare capacity is
-$c^*+o(1)$; integerization gives \eqref{eq:safety-margin}. Strict monotonicity
+$c^*+o(1)$; integer rounding gives \eqref{eq:safety-margin}. Strict monotonicity
 of $H_c$ follows by stochastic ordering of $\mathrm{Exp}(c)$.
 
 For a fleet,
@@ -389,7 +389,7 @@ $\pi_Nr+(1-\pi_N)f_N=O(N^{-1})$; when $\pi_N=O(N^{-1})$, necessarily
 $f_N=O(N^{-1})$.
 
 \textbf{Theorem 4 (distribution-free burst impossibility).}
-Let service times be iid, independent of scheduling information, with $0<E[S]<\infty$, and suppose the renewal function
+Let service times be iid, independent of scheduling information, with $0<E[S]<\infty$, and let $S_1,S_2,\ldots$ be iid copies of $S$. Suppose the renewal function
 \begin{equation}
 U_S(D)=\sum_{k\ge1}P(S_1+\cdots+S_k\le D)<\infty
 \end{equation}
@@ -451,7 +451,7 @@ delay bound for matched admitted alerts under this suppression mechanism.
 \section{Evaluation}
 \label{sec:evaluation}
 
-We evaluate structural claims rather than fit a single deployment-specific parameter vector. A 95\% target is used as an illustrative engineering requirement: queue-only frontiers use \(\widetilde Q_M\ge0.95\), while referral-aware results use \(C\ge0.95\). Changing the target moves the quantitative frontier but not the theorems or qualitative comparisons. The main axes are dimensionless offered load \(A\) and normalized deadline \(d\). Unless otherwise stated, \(h=a=1\) so that experiments isolate referral and capacity effects; lower application-specific values enter multiplicatively through \(C\) and tighten the feasible region. Analytical curves use \eqref{eq:qexact}. Simulation-only results use 50,000 post-burn-in alerts per replicate after a 5,000-alert burn-in, with five independent seeds. We compare Poisson arrivals with fixed batches and a symmetric two-state Markov-modulated Poisson process (MMPP; 9:1 high/low rate contrast, identical long-run mean, normalized state-switch rate 0.12). Service distributions are normalized to \(E[S]=1\) and include deterministic, Gamma, exponential, and lognormal families. \textbf{Synthetic detector model.} Detector-specific experiments use a unit-variance binormal score \(Y\): \(Y\mid Z=0\sim\mathcal N(0,1)\) and \(Y\mid Z=1\sim\mathcal N(d',1)\); referring when \(Y\ge\tau\) gives \(f=\bar\Phi(\tau)\) and \(r=\bar\Phi(\tau-d')\), where \(\bar\Phi(x)=1-\Phi(x)\) is the standard-normal survival function. Thus \(d'\) is the critical/non-critical score separation in standard deviations. We write \(L=\Lambda E[S]\) for the pre-referral candidate load. Before the stress tests, we validate the discrete-event engine against the exact M/M/\(M\) expression at four \((A,M,d)\) settings; the maximum absolute discrepancy in deadline-completion probability is 0.0037.
+We evaluate structural claims rather than fit a single deployment-specific parameter vector. A 95\% target is used as an illustrative engineering requirement: queue-only frontiers use \(\widetilde Q_M\ge0.95\), while referral-aware results use \(C\ge0.95\). Changing the target moves the quantitative frontier but not the theorems or qualitative comparisons. The main axes are dimensionless offered load \(A\) and normalized deadline \(d\). Unless otherwise stated, \(h=a=1\) so that experiments isolate referral and capacity effects; lower application-specific values enter multiplicatively through \(C\) and tighten the feasible region. Analytical curves use \eqref{eq:qexact}. Unless stated otherwise, queue-robustness simulations use 50,000 post-burn-in alerts per replicate after a 5,000-alert burn-in, with five independent seeds. We compare Poisson arrivals with fixed batches and a symmetric two-state Markov-modulated Poisson process (MMPP; 9:1 high/low rate contrast, identical long-run mean, normalized state-switch rate 0.12). Service distributions are normalized to \(E[S]=1\) and include deterministic, Gamma, exponential, and lognormal families. \textbf{Synthetic detector model.} Detector-specific experiments use a unit-variance binormal score \(Y\): \(Y\mid Z=0\sim\mathcal N(0,1)\) and \(Y\mid Z=1\sim\mathcal N(d',1)\); referring when \(Y\ge\tau\) gives \(f=\bar\Phi(\tau)\) and \(r=\bar\Phi(\tau-d')\), where \(\bar\Phi(x)=1-\Phi(x)\) is the standard-normal survival function. Thus \(d'\) is the critical/non-critical score separation in standard deviations. We write \(L=\Lambda E[S]\) for the pre-referral candidate load, so \(A=L[\pi r+(1-\pi)f]\) after referral. Before the stress tests, we validate the discrete-event engine against the exact M/M/\(M\) expression at four \((A,M,d)\) settings; the maximum absolute discrepancy in deadline-completion probability is 0.0037.
 
 \subsection{Classical fan-out as a special case}
 
@@ -548,7 +548,7 @@ Across these service families, batch-8 completion remains roughly 0.78--0.82 whi
 \subsection{Frontier-derived supervisory mitigation}
 \label{sec:qar}
 
-The frontier suggests two direct mitigations when demand approaches human capacity. First, a referred alert can be served non-preemptively by descending detector score rather than FCFS. Second, the referral threshold can react to queue congestion. We instantiate a simple \emph{queue-aware referral} (QAR) rule
+The frontier suggests two direct mitigations when demand approaches human capacity. First, a referred alert can be served non-preemptively by descending detector score rather than FCFS. Second, the referral threshold can react to queue congestion. For the score model above, a candidate is referred when \(Y\ge\tau(q)\). We instantiate a simple \emph{queue-aware referral} (QAR) rule
 \begin{equation}
 \tau(q)=\tau_0+\gamma[q-M]_+,
 \label{eq:qar}
@@ -560,7 +560,7 @@ W_q\sim\operatorname{Erlang}(q-M+1,M\mu),
 \end{equation}
 with shape \(q-M+1\) and rate \(M\mu\). Thus \(P(W_q+S\le D)\) decreases monotonically with backlog. The QAR rule keeps the threshold at \(\tau_0\) until a waiting queue is present, then tightens it with additional queued work.
 
-We test QAR on synthetic two-state MMPP candidate streams with \(\pi=.01\), \(d'=3\), \(M=2\), \(d=4\), and exponential mean-one service. For each policy, \(\tau_0\)---and \(\gamma\) where applicable---is selected to maximize \(C\) on three development seeds at candidate load \(L=14\), then frozen for all held-out evaluation streams. The selected \((\tau_0,\gamma)\) values are \((1.7,0)\) for fixed+FCFS, \((1.6,0)\) for score priority, \((1.5,.30)\) for QAR, and \((1.5,.05)\) for QAR+score priority.
+We test QAR on synthetic two-state MMPP candidate streams with \(\pi=.01\), \(d'=3\), \(M=2\), \(d=4\), and exponential mean-one service. For each policy, \(\tau_0\)---and \(\gamma\) where applicable---is selected to maximize \(C\) on three development seeds at candidate load \(L=14\), using 16,000 post-burn-in candidates after a 2,000-candidate burn-in, then frozen. Held-out results average five disjoint seeds with 40,000 post-burn-in candidates after a 4,000-candidate burn-in per load. The selected \((\tau_0,\gamma)\) values are \((1.7,0)\) for fixed+FCFS, \((1.6,0)\) for score priority, \((1.5,.30)\) for QAR, and \((1.5,.05)\) for QAR+score priority.
 
 \begin{figure}[t]
     \centering
@@ -591,7 +591,7 @@ A right or interface to intervene is not equivalent to an ability to intervene. 
 
 \section*{Acknowledgments}
 
-\textbf{AI use disclosure} ChatGPT was used to assist with drafting and editing the structural-guarantee exposition in Sec.~\ref{sec:guarantees}, the queue-state explanation in Sec.~\ref{sec:qar}, and evaluation/figure-generation code; Mistral Chat was used for formatting and English-language proofreading. The authors verified all mathematical claims, citations, code, and numerical results.
+\textbf{AI use disclosure} ChatGPT was used to assist with organizing literature searches for Sec.~\ref{sec:related}, drafting and editing mathematical exposition and notation in Sec.~\ref{sec:model}, clarifying the evaluation protocol in Sec.~\ref{sec:evaluation}, and drafting evaluation/figure-generation code; Mistral Chat was used for formatting and English-language proofreading. The authors verified all mathematical claims, citations, code, and numerical results.
 
 Errors remain our own.
 
