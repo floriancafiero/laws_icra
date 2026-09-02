@@ -5,6 +5,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
+concurrency:
+  group: icra-evaluation-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test-and-evaluate:
     runs-on: ubuntu-latest
