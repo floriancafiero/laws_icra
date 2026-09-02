@@ -32,6 +32,16 @@ TAB.mkdir(parents=True, exist_ok=True)
 SEED = 20260902
 TARGET = 0.95
 
+# IEEE single-column figures: generate at final physical width so fonts remain legible.
+FIGSIZE = (3.45, 2.45)
+plt.rcParams.update({
+    "font.size": 8,
+    "axes.labelsize": 8,
+    "xtick.labelsize": 7,
+    "ytick.labelsize": 7,
+    "legend.fontsize": 7,
+})
+
 
 def q_dimless(A: float, M: int, d: float) -> float:
     """M/M/M deadline-completion probability with mean service normalized to 1."""
@@ -79,20 +89,21 @@ def figure_feasibility():
     rows = []
     for M in [1, 2, 4, 8]:
         for d in ds:
-            rows.append({"M": M, "d": d, "A_star": max_offered_load(M, d)})
+            a_star = max_offered_load(M, d)
+            rows.append({"M": M, "d": d, "A_star": a_star, "rho_star": a_star / M})
     df = pd.DataFrame(rows)
     df.to_csv(TAB / "fig1_feasibility_frontier.csv", index=False)
 
-    plt.figure(figsize=(7.4, 4.8))
+    plt.figure(figsize=FIGSIZE)
     for M in [1, 2, 4, 8]:
         sub = df[df["M"] == M]
-        plt.plot(sub["d"], sub["A_star"], label=f"EHC frontier, M={M}")
-        plt.axhline(M, linestyle=":", linewidth=0.8)
+        plt.plot(sub["d"], sub["rho_star"], label=f"M={M}")
+    plt.axhline(1.0, linestyle=":", linewidth=0.8, label="stability")
     plt.xlabel("Normalized deadline  d = D / E[S]")
-    plt.ylabel("Maximum offered alert load  A*")
-    plt.title("Deadline-aware human-control capacity")
-    plt.legend(ncol=2, fontsize=8)
-    plt.tight_layout()
+    plt.ylabel("Max. certifiable utilization  rho*")
+    plt.ylim(0, 1.03)
+    plt.legend(ncol=2)
+    plt.tight_layout(pad=0.3)
     plt.savefig(FIG / "fig1_feasibility_frontier.pdf")
     plt.savefig(FIG / "fig1_feasibility_frontier.svg")
     plt.close()
@@ -131,7 +142,7 @@ def figure_oversight_paradox():
     df = pd.DataFrame(rows)
     df.to_csv(TAB / "fig2_oversight_paradox.csv", index=False)
 
-    plt.figure(figsize=(7.4, 4.8))
+    plt.figure(figsize=FIGSIZE)
     for M in [2, 4, 8]:
         sub = df[df["M"] == M].sort_values("TPR")
         plt.plot(sub["TPR"], sub["EHC"], label=f"M={M}")
@@ -139,10 +150,10 @@ def figure_oversight_paradox():
         plt.scatter([best["TPR"]], [best["EHC"]], s=28)
     plt.xlabel("Escalation sensitivity / TPR")
     plt.ylabel("Effective human control")
+    plt.xlim(0.75, 1.005)
     plt.ylim(0, 1)
-    plt.title("More escalation is not always more human control")
     plt.legend()
-    plt.tight_layout()
+    plt.tight_layout(pad=0.3)
     plt.savefig(FIG / "fig2_oversight_paradox.pdf")
     plt.savefig(FIG / "fig2_oversight_paradox.svg")
     plt.close()
@@ -201,19 +212,19 @@ def figure_false_positive_scaling():
     plt.figure(figsize=(7.4, 4.8))
     for f in [0.001, 0.005, 0.01, 0.02]:
         sub = df[df["FPR"] == f]
-        plt.plot(sub["N"], sub["M_min"], label=f"FPR={100*f:.1f}%")
+        line, = plt.plot(sub["N"], sub["M_min"], label=f"FPR={100*f:.1f}%")
         plt.plot(
             sub["N"],
             sub["first_order_N_ell_f"],
             linestyle=":",
             linewidth=0.9,
+            color=line.get_color(),
         )
     plt.xscale("log")
     plt.xlabel("Fleet scale N")
     plt.ylabel("Minimum operators for EHC >= 0.95")
-    plt.title("False-positive rate determines first-order staffing at scale")
     plt.legend()
-    plt.tight_layout()
+    plt.tight_layout(pad=0.3)
     plt.savefig(FIG / "fig3_false_positive_scaling.pdf")
     plt.savefig(FIG / "fig3_false_positive_scaling.svg")
     plt.close()
@@ -330,13 +341,14 @@ def figure_burst_same_mean():
 
     x = np.arange(len(df))
     ci = 1.96 * df["Q_sd"] / math.sqrt(5)
-    plt.figure(figsize=(7.4, 4.8))
-    plt.bar(x, df["Q_mean"], yerr=ci, capsize=3)
-    plt.xticks(x, ["Poisson", "Batch 2", "Batch 4", "Batch 8", "MMPP"])
-    plt.ylabel("P(alert completed before deadline)")
+    plt.figure(figsize=FIGSIZE)
+    plt.bar(x, df["Q_mean"], yerr=ci, capsize=2)
+    plt.axhline(TARGET, linestyle="--", linewidth=0.8, label="95% target")
+    plt.xticks(x, ["Pois.", "B2", "B4", "B8", "MMPP"])
+    plt.ylabel("Deadline completion probability")
     plt.ylim(0, 1)
-    plt.title("Same mean utilization, different human-control performance")
-    plt.tight_layout()
+    plt.legend(loc="lower left")
+    plt.tight_layout(pad=0.3)
     plt.savefig(FIG / "fig4_same_mean_burst.pdf")
     plt.savefig(FIG / "fig4_same_mean_burst.svg")
     plt.close()
@@ -378,15 +390,14 @@ def figure_general_service_robustness():
     pivot = df.pivot(index="service", columns="process", values="Q_mean")
     x = np.arange(len(pivot))
     width = 0.24
-    plt.figure(figsize=(8.0, 4.8))
+    plt.figure(figsize=(3.45, 2.7))
     for offset, process in zip([-width, 0, width], ["poisson", "batch4", "batch8"]):
         plt.bar(x + offset, pivot[process], width, label=process)
     plt.xticks(x, pivot.index, rotation=18, ha="right")
     plt.ylabel("P(alert completed before deadline)")
     plt.ylim(0, 1)
-    plt.title("Burst penalty persists beyond exponential service")
     plt.legend()
-    plt.tight_layout()
+    plt.tight_layout(pad=0.3)
     plt.savefig(FIG / "fig5_service_robustness.pdf")
     plt.savefig(FIG / "fig5_service_robustness.svg")
     plt.close()
