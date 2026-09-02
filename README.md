@@ -1,109 +1,105 @@
 # Effective Human Control under Capacity Constraints
 
-Research prototype for a formal and simulation-based study of **effective human control (EHC)** in autonomous multi-agent systems.
+Research repository for an ICRA 2027 submission on **capacity-aware effective human control (EHC)** in supervisory multi-robot systems.
 
-## Core question
+## Core claim
 
-When does a formal opportunity for human intervention translate into a realistic ability to intervene correctly and in time?
+A human intervention channel is not itself a human-control guarantee. The end-to-end quantity is
 
-The project models an end-to-end supervisory chain:
+$$
+C=P(\text{successful timely human intervention}\mid Z=1)
+=
+rhaQ_M(\nu,D),
+$$
 
-`autonomous decision -> escalation detector -> human queue -> human decision -> intervention`
+with
 
-A central quantity is
+$$
+\nu=N\lambda[\pi r+(1-\pi)f].
+$$
 
-\[
-C = r\,h\,a\,Q_M(\nu,D),
-\]
+The submission connects detector quality, base rates, finite human capacity, deadlines, and correlated demand.
 
-where:
+## Submission mode
 
-- `r`: true-positive rate / sensitivity of escalation;
-- `h`: probability of correct human response after timely review;
-- `a`: probability that a correct intervention successfully takes effect;
-- `Q_M(ν,D)`: probability an alert is fully processed by a pool of `M` operators before deadline `D`;
-- `ν = N λ [π r + (1-π) f]`: total warning rate;
-- `N`: number of autonomous systems;
-- `λ`: decisions per system per unit time;
-- `π`: prevalence of oversight-critical situations;
-- `f`: false-positive rate of the warning system.
+The ICRA paper is now intentionally a **formal safety/performance evaluation paper without a human-subject experiment**.
 
-## Current theoretical claims
+The four main theoretical contributions are:
 
-1. **Absolute feasibility ceiling.** Staffing cannot compensate for missed detections, insufficient decision time, human error, or ineffective intervention.
-2. **Human-control capacity.** For fixed operator capacity and deadlines, each operator pool has a maximum sustainable warning rate compatible with a target EHC.
-3. **Oversight paradox.** A more sensitive escalation policy can reduce effective control when the extra warning traffic causes enough congestion.
-4. **False-positive scaling law.** In rare-event regimes with fixed nonzero false-positive rate, minimum staffing scales linearly with fleet size.
-5. **Average-load insufficiency.** Equal average warning rates can yield radically different EHC when warnings are correlated in bursts.
+1. deadline/service-time feasibility and unique effective-control capacity;
+2. the **Oversight Paradox**: more escalation sensitivity can reduce end-to-end control;
+3. a rare-event false-positive staffing law;
+4. a proof that mean utilization cannot guarantee control under synchronized demand.
 
-## Primary robotics scenario
+Classical fan-out is recovered as a special stability case.
 
-The paper uses **variable-autonomy multi-robot firefighting/search-and-rescue** as its neutral engineering scenario. This closely matches recent meaningful-human-control and multi-robot alert studies, while keeping large-fleet analyses explicitly labeled as scaling stress tests.
+## Main files
 
-See `SCENARIO.md`.
+- `MODEL.md` — frozen formal model and theorem statements.
+- `SUPPLEMENT_PROOFS.md` — full proof notes.
+- `ICRA_EVALUATION.md` — exact no-user-study evaluation protocol.
+- `PAPER_PLAN.md` — eight-page ICRA narrative and reviewer-defense plan.
+- `SCENARIO.md` — neutral firefighting/search-and-rescue interpretation.
+- `notes/empirical_calibration.md` — HRI/autonomy empirical anchors.
+- `src/icra_evaluation.py` — regenerates all five submission evaluation figures and raw tables.
+- `src/simulations.py` — analytical M/M/M utilities and earlier simulation code.
+- `RESULTS_PREVIEW.md` — current numerical sanity-check results.
+- `pilot/` — optional future human-validation prototype; **not on the ICRA critical path**.
 
-## Repository layout
-
-- `MODEL.md` — formal model and current propositions.
-- `SCENARIO.md` — primary robotics scenario.
-- `CERTIFICATION.md` — proposed measurable performance-based EHC certificate.
-- `EXPERIMENT.md` — human-subject validation design.
-- `PAPER_PLAN.md` — ICRA narrative and figure plan.
-- `pilot/` — runnable local pilot experiment, validation checks, and pilot analysis.
-- `notes/literature_gap.md` — novelty boundaries.
-- `notes/empirical_calibration.md` — empirical anchors and non-identifiable parameters.
-- `notes/dimensionless_formulation.md` — scale-free workload/deadline formulation.
-- `src/simulations.py` — baseline analytical/Monte Carlo results.
-- `src/calibrated_scenarios.py` — empirical-envelope robustness.
-- `src/firefighting_scenario.py` — general-service scaling stress test.
-- `src/certification.py` — exact binomial lower-bound/sample-size utilities.
-
-## Reproduce theory/simulation results
+## Run the submission evaluation
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-python src/simulations.py
-python src/calibrated_scenarios.py
-python src/firefighting_scenario.py
-python src/certification.py
+make figures
 ```
 
-## Run the human pilot prototype
+Equivalent:
 
 ```bash
-python pilot/validate.py
-python -m unittest tests/test_pilot_logic.py
-python pilot/app.py
+python src/icra_evaluation.py
 ```
 
-Then open `http://127.0.0.1:5000`.
+Outputs are written to:
 
-The pilot is a counterbalanced 2 × 2 within-subject manipulation of nuisance-alert burden and temporal clustering. It logs correctness, timeliness, response latency, and queue depth while keeping genuine critical-event detector sensitivity fixed at 1 in order to isolate human-capacity effects.
+- `results/figures/icra/`
+- `results/tables/icra/`
 
-See `pilot/README.md` before using the system with participants.
+Run mathematical sanity checks with:
 
-## Empirical status
+```bash
+python -m unittest tests/test_theory.py
+```
 
-The original baseline uses **synthetic** parameters to test qualitative/theoretical behavior. Empirical anchors, cross-domain robustness anchors, and scenario parameters are labeled separately; none are presented as estimates of an autonomous-weapons deployment.
+## Dimensionless evaluation
 
-Recent HRI evidence is concentrated at small team sizes, and the model recovers the classic fan-out boundary as a special case. Large-fleet analyses ask a scaling question: what warning quality and human capacity are required to preserve EHC as autonomous systems become more numerous?
+The main evaluation uses
 
-The main presentation uses dimensionless offered load
+$$
+A=\nu E[S]
+$$
 
-\[
-A=\Lambda E[S][\pi r+(1-\pi)f]
-\]
+as offered human workload and
 
-and normalized deadline
+$$
+d=\frac{D}{E[S]}
+$$
 
-\[
-d=D/E[S],
-\]
+as normalized deadline.
 
-with non-exponential service-time and burst robustness in simulation.
+This avoids pretending that one physical response-time scale is universal. Physical HRI values are used to interpret the axes, not to define the theory.
+
+## Robotics anchor
+
+The neutral scenario is variable-autonomy multi-robot firefighting/search-and-rescue. Current HRI team sizes and timings ground interpretation; large fleets are explicitly labeled **scaling stress tests**.
 
 ## Current critical path
 
-The next empirical step is a **small researcher/convenience pilot** using `pilot/app.py`. The purpose is to estimate the actual service-time distribution, check for ceiling/floor effects, verify that the false-positive and burst manipulations change queue pressure as intended, and obtain effect-size estimates for the preregistered main human study.
+1. regenerate and inspect the five ICRA figures;
+2. run all required ablations/baseline comparisons;
+3. draft the eight-page manuscript around the formal results;
+4. run a hostile-review pass;
+5. polish supplementary proofs and reproducibility materials.
+
+Human-subject validation is future work, not required for the current submission.
