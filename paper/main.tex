@@ -12,7 +12,7 @@
 
 \title{\LARGE \bf
 When Can Humans Really Intervene?\\
-Capacity-Aware Safety Guarantees for Supervisory Multi-Robot Systems
+Capacity-Aware Effective Human Control for Supervisory Multi-Robot Systems
 }
 
 \author{Anonymous Authors}
@@ -65,7 +65,7 @@ A fleet of \(N\) agents generates candidate supervisory situations at rate
 \begin{equation}
 \Lambda=N\lambda.
 \end{equation}
-A situation is oversight-critical with probability \(\pi\). Let \(R=1\) denote referral to a human. The escalation mechanism has
+A situation is oversight-critical with probability \(\pi\), meaning that safe or intended operation requires a human judgment or intervention before the applicable deadline; this is not synonymous with a robot failure. Let \(R=1\) denote referral to a human. The escalation mechanism has
 \begin{equation}
 r=P(R=1\mid Z=1),\qquad
 f=P(R=1\mid Z=0).
@@ -197,7 +197,7 @@ Consequently, batch-Poisson systems can have identical mean alert rate and utili
 \section{Evaluation}
 \label{sec:evaluation}
 
-We evaluate structural claims rather than fit a single deployment-specific parameter vector. A 95\% service level is used as an illustrative engineering target in the main figures; changing the target moves the quantitative frontier but not the theorems or qualitative comparisons. The main axes are dimensionless offered load \(A\) and normalized deadline \(d\). Unless otherwise stated, \(h=a=1\) so that experiments isolate referral and capacity effects; lower application-specific values simply tighten the feasibility ceiling. Analytical curves use \eqref{eq:qexact}. Simulation-only results use at least 50,000 alerts per replicate and five independent seeds. We compare Poisson arrivals with fixed batches and a symmetric two-state Markov-modulated Poisson process (9:1 high/low rate contrast, identical long-run mean). Service distributions are normalized to \(E[S]=1\) and include deterministic, Gamma, exponential, and lognormal families.
+We evaluate structural claims rather than fit a single deployment-specific parameter vector. A 95\% service level is used as an illustrative engineering target in the main figures; changing the target moves the quantitative frontier but not the theorems or qualitative comparisons. The main axes are dimensionless offered load \(A\) and normalized deadline \(d\). Unless otherwise stated, \(h=a=1\) so that experiments isolate referral and capacity effects; lower application-specific values simply tighten the feasibility ceiling. Analytical curves use \eqref{eq:qexact}. Simulation-only results use 50,000 measured alerts per replicate after a 5,000-alert burn-in, with five independent seeds. We compare Poisson arrivals with fixed batches and a symmetric two-state Markov-modulated Poisson process (9:1 high/low rate contrast, identical long-run mean). Service distributions are normalized to \(E[S]=1\) and include deterministic, Gamma, exponential, and lognormal families.
 
 \subsection{Classical fan-out as a special case}
 
