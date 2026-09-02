@@ -403,24 +403,22 @@ Write $Q_M(\nu,D;\mu)$ here to expose the service-rate dependence, and use
 superscripts \(-\) and \(+\) for lower and upper calibration bounds. Suppose
 $\lambda\in[\lambda^-,\lambda^+]$,
 $\pi\in[\pi^-,\pi^+]$, $r\in[r^-,r^+]$, $f\in[f^-,f^+]$,
-$\mu\in[\mu^-,\mu^+]$, $D\in[D^-,D^+]$, $h\ge h^-$, and $a\ge a^-$,
-with $r^-\ge f^+$, so every admissible detector has \(r\ge f\) and referral
-load is nondecreasing in prevalence throughout the box. If
-$N\lambda^+[\pi^+r^++(1-\pi^+)f^+]\ge M\mu^-$, the box contains a
-nonstationary point and we set $C_{\rm cert}=0$. Otherwise every admissible
-parameter vector satisfies $C\ge C_{\rm cert}$, where
+$\mu\in[\mu^-,\mu^+]$, $D\in[D^-,D^+]$, $h\ge h^-$, and $a\ge a^-$.
+At fixed \(r\), define the largest referred fraction allowed by the box as
+\(\alpha^+(r)=\max_{\pi\in\{\pi^-,\pi^+\}}
+[\pi r+(1-\pi)f^+]\). If
+$N\lambda^+\alpha^+(r^+)\ge M\mu^-$, the box contains a nonstationary point
+and we set $C_{\rm cert}=0$. Otherwise every admissible parameter vector
+satisfies $C\ge C_{\rm cert}$, where
 \begin{equation}
-\begin{aligned}
-C_{\rm cert}=h^-a^-\min_{r\in[r^-,r^+]} r\,Q_M\!\bigl(&
-N\lambda^+[\pi^+r+(1-\pi^+)f^+],\\[-1mm]
-& D^-;\mu^-\bigr).
-\end{aligned}
+C_{\rm cert}=h^-a^-\min_{r\in[r^-,r^+]}
+r\,Q_M\!\left(N\lambda^+\alpha^+(r),D^-;\mu^-\right).
 \label{eq:robust-cert}
 \end{equation}
-Queue coupling makes \(Q_M\) decrease with alert rate and increase with
-service rate and deadline. Hence \(C_{\rm cert}\ge C_{\min}\) certifies the
-entire box; only the one-dimensional minimization over \(r\) remains because
-Theorem~2 makes referral sensitivity non-monotone.
+The worst-case choices follow from monotonicity of queue delay in arrival rate,
+service rate, and deadline; only the one-dimensional minimization over \(r\)
+remains because Theorem~2 makes referral sensitivity non-monotone. Hence
+\(C_{\rm cert}\ge C_{\min}\) certifies the entire box.
 
 \textbf{Corollary 1 (finite-source sample-path dominance).}
 Suppose instead that each robot's rate-$\lambda$ candidate clock is suppressed
