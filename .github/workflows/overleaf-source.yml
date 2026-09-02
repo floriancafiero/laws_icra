@@ -31,7 +31,16 @@ jobs:
           cp /tmp/ieeeconf/ieeeconf.cls overleaf_bundle/ieeeconf.cls
           cp results/figures/icra/*.pdf overleaf_bundle/figures/
           cd overleaf_bundle
-          python3 -m zipfile -c ../laws_icra_final_overleaf.zip             main.tex references.bib ieeeconf.cls figures/*.pdf
+          python3 - <<'PY'
+          from pathlib import Path
+          from zipfile import ZIP_DEFLATED, ZipFile
+
+          root = Path(".")
+          with ZipFile("../laws_icra_final_overleaf.zip", "w", ZIP_DEFLATED) as archive:
+              for path in sorted(root.rglob("*")):
+                  if path.is_file():
+                      archive.write(path, path.as_posix())
+          PY
 
       - name: Upload Overleaf bundle
         uses: actions/upload-artifact@v4
