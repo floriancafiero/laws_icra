@@ -9,9 +9,6 @@ concurrency:
   group: icra-evaluation-${{ github.ref }}
   cancel-in-progress: true
 
-permissions:
-  contents: write
-
 jobs:
   test-and-evaluate:
     runs-on: ubuntu-latest
@@ -30,18 +27,6 @@ jobs:
 
       - name: Generate ICRA evaluation
         run: python src/icra_evaluation.py
-
-      - name: Commit generated figure outputs
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -f results/figures/icra/fig0_architecture.pdf results/figures/icra/fig0_architecture.svg
-          if git diff --cached --quiet; then
-            echo "Architecture figure already up to date."
-          else
-            git commit -m "Update final ICRA architecture figure [skip ci]"
-            git push
-          fi
 
       - name: Upload generated evaluation
         uses: actions/upload-artifact@v4
