@@ -1,0 +1,40 @@
+name: Overleaf source bundle
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "paper/**"
+      - "results/figures/icra/**"
+      - ".github/workflows/overleaf-source.yml"
+  workflow_dispatch:
+
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch official PaperPlaza ieeeconf class
+        run: |
+          curl -fsSL https://ras.papercept.net/conferences/support/files/ieeeconf.zip -o /tmp/ieeeconf.zip
+          mkdir -p /tmp/ieeeconf
+          unzip -j -o /tmp/ieeeconf.zip '*ieeeconf.cls' -d /tmp/ieeeconf
+          test -f /tmp/ieeeconf/ieeeconf.cls
+
+      - name: Assemble self-contained Overleaf project
+        run: |
+          rm -rf overleaf_bundle
+          mkdir -p overleaf_bundle/figures
+          cp paper/main.tex overleaf_bundle/main.tex
+          cp paper/references.bib overleaf_bundle/references.bib
+          cp /tmp/ieeeconf/ieeeconf.cls overleaf_bundle/ieeeconf.cls
+          cp results/figures/icra/*.pdf overleaf_bundle/figures/
+          cd overleaf_bundle
+          python3 -m zipfile -c ../laws_icra_final_overleaf.zip             main.tex references.bib ieeeconf.cls figures/*.pdf
+
+      - name: Upload Overleaf bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: icra-overleaf-source
+          path: laws_icra_final_overleaf.zip
