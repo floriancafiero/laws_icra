@@ -206,7 +206,7 @@ def figure_oversight_paradox():
         best = sub.loc[sub["EHC"].idxmax()]
         plt.scatter([best["TPR"]], [best["EHC"]], s=28)
     plt.xlabel("Escalation sensitivity / TPR")
-    plt.ylabel("Effective human control")
+    plt.ylabel("End-to-end timely-control probability")
     plt.xlim(0.75, 1.005)
     plt.ylim(0, 1)
     plt.legend()
@@ -697,6 +697,228 @@ def figure_robotics_case_study():
     return df
 
 
+def simulate_scored_supervision(
+    candidate_load,
+    *,
+    pi=0.01,
+    dprime=3.0,
+    M=2,
+    d=4.0,
+    base_threshold=1.5,
+    gamma=0.0,
+    scheduling="fcfs",
+    n=40000,
+    warmup=4000,
+    seed=1,
+):
+    """Simulate score-based referral with FCFS or risk-priority human service."""
+    rng = np.random.default_rng(seed)
+    total = n + warmup
+    arrivals = generate_arrivals("mmpp", candidate_load, total, rng)
+    labels = rng.random(total) < pi
+    scores = rng.normal(dprime * labels.astype(float), 1.0)
+    services = rng.exponential(1.0, size=total)
+
+    busy = []  # (finish, seq, job)
+    waiting = []
+    critical_total = critical_referred = critical_success = 0
+    referrals = false_referrals = 0
+    queue_sum = queue_max = measured_arrivals = 0
+
+    def push_wait(job):
+        if scheduling == "fcfs":
+            heapq.heappush(waiting, (job["seq"], job["seq"], job))
+        elif scheduling == "risk":
+            heapq.heappush(waiting, (-job["score"], job["seq"], job))
+        else:
+            raise ValueError(scheduling)
+
+    def start_job(job, start_time):
+        heapq.heappush(busy, (start_time + job["service"], job["seq"], job))
+
+    def process_until(t):
+        nonlocal critical_success
+        while busy and busy[0][0] <= t:
+            finish, _, job = heapq.heappop(busy)
+            if job["measured"] and job["critical"] and finish <= job["arrival"] + d:
+                critical_success += 1
+            if waiting:
+                _, _, nxt = heapq.heappop(waiting)
+                start_job(nxt, finish)
+
+    for idx, (arrival, critical, score, service) in enumerate(
+        zip(arrivals, labels, scores, services)
+    ):
+        process_until(arrival)
+        measured = idx >= warmup
+        outstanding = len(busy) + len(waiting)
+        threshold = base_threshold + gamma * max(0, outstanding - M)
+        referred = score >= threshold
+
+        if measured:
+            measured_arrivals += 1
+            queue_sum += outstanding
+            queue_max = max(queue_max, outstanding)
+            if critical:
+                critical_total += 1
+
+        if referred:
+            if measured:
+                referrals += 1
+                if critical:
+                    critical_referred += 1
+                else:
+                    false_referrals += 1
+            job = {
+                "seq": idx,
+                "score": float(score),
+                "critical": bool(critical),
+                "arrival": float(arrival),
+                "service": float(service),
+                "measured": measured,
+            }
+            if len(busy) < M:
+                start_job(job, arrival)
+            else:
+                push_wait(job)
+
+    while busy:
+        finish, _, job = heapq.heappop(busy)
+        if job["measured"] and job["critical"] and finish <= job["arrival"] + d:
+            critical_success += 1
+        if waiting:
+            _, _, nxt = heapq.heappop(waiting)
+            start_job(nxt, finish)
+
+    negatives = max(1, measured_arrivals - critical_total)
+    return {
+        "C": critical_success / max(1, critical_total),
+        "critical_recall": critical_referred / max(1, critical_total),
+        "referral_fraction": referrals / max(1, measured_arrivals),
+        "FPR": false_referrals / negatives,
+        "mean_outstanding": queue_sum / max(1, measured_arrivals),
+        "max_outstanding": queue_max,
+        "critical_events": critical_total,
+    }
+
+
+def _tune_supervisory_policy(scheduling, queue_aware):
+    """Select policy parameters on fixed development seeds at L=14."""
+    dev_seeds = [SEED + 101, SEED + 102, SEED + 103]
+    if queue_aware:
+        settings = [
+            (threshold, gamma)
+            for threshold in [1.0, 1.25, 1.5, 1.75]
+            for gamma in [0.05, 0.1, 0.2, 0.3, 0.4]
+        ]
+    else:
+        settings = [(threshold, 0.0) for threshold in np.arange(1.0, 2.41, 0.1)]
+
+    best = None
+    rows = []
+    for threshold, gamma in settings:
+        vals = [
+            simulate_scored_supervision(
+                14.0,
+                base_threshold=threshold,
+                gamma=gamma,
+                scheduling=scheduling,
+                n=16000,
+                warmup=2000,
+                seed=seed,
+            )["C"]
+            for seed in dev_seeds
+        ]
+        mean_c = float(np.mean(vals))
+        rows.append({
+            "scheduling": scheduling,
+            "queue_aware": queue_aware,
+            "threshold": threshold,
+            "gamma": gamma,
+            "development_C": mean_c,
+        })
+        candidate = (mean_c, threshold, gamma)
+        if best is None or candidate[0] > best[0]:
+            best = candidate
+    return best, rows
+
+
+def figure_capacity_aware_policy():
+    """Compare static and capacity-aware supervisory policies on held-out streams."""
+    policy_specs = [
+        ("Fixed + FCFS", "fcfs", False),
+        ("Risk priority", "risk", False),
+        ("QAR", "fcfs", True),
+        ("QAR + priority", "risk", True),
+    ]
+
+    tuned = {}
+    tuning_rows = []
+    for name, scheduling, queue_aware in policy_specs:
+        best, rows = _tune_supervisory_policy(scheduling, queue_aware)
+        tuned[name] = {
+            "threshold": best[1],
+            "gamma": best[2],
+            "scheduling": scheduling,
+        }
+        for row in rows:
+            row["policy"] = name
+        tuning_rows.extend(rows)
+
+    pd.DataFrame(tuning_rows).to_csv(
+        TAB / "policy_tuning_development.csv", index=False
+    )
+
+    loads = [8, 10, 12, 14, 16, 18, 20]
+    eval_seeds = [SEED + 500 + i for i in range(5)]
+    rows = []
+    for load in loads:
+        for name, _, _ in policy_specs:
+            spec = tuned[name]
+            metrics = [
+                simulate_scored_supervision(
+                    load,
+                    base_threshold=spec["threshold"],
+                    gamma=spec["gamma"],
+                    scheduling=spec["scheduling"],
+                    n=40000,
+                    warmup=4000,
+                    seed=seed,
+                )
+                for seed in eval_seeds
+            ]
+            row = {
+                "candidate_load_L": load,
+                "policy": name,
+                "threshold": spec["threshold"],
+                "gamma": spec["gamma"],
+            }
+            for key in [
+                "C", "critical_recall", "referral_fraction",
+                "FPR", "mean_outstanding", "max_outstanding"
+            ]:
+                row[key] = float(np.mean([m[key] for m in metrics]))
+            row["C_sd"] = float(np.std([m["C"] for m in metrics], ddof=1))
+            rows.append(row)
+
+    df = pd.DataFrame(rows)
+    df.to_csv(TAB / "fig7_capacity_aware_policy.csv", index=False)
+
+    plt.figure(figsize=FIGSIZE)
+    for name, _, _ in policy_specs:
+        sub = df[df["policy"] == name]
+        plt.plot(sub["candidate_load_L"], sub["C"], marker="o", markersize=2.8, label=name)
+    plt.xlabel(r"Pre-referral candidate load $L=\Lambda E[S]$")
+    plt.ylabel("End-to-end timely-control probability")
+    plt.ylim(0.65, 1.0)
+    plt.legend(fontsize=6.2)
+    plt.tight_layout(pad=0.3)
+    plt.savefig(FIG / "fig7_capacity_aware_policy.pdf")
+    plt.savefig(FIG / "fig7_capacity_aware_policy.svg")
+    plt.close()
+    return df
+
+
 def main():
     figure_architecture()
     figure_feasibility()
@@ -705,6 +927,7 @@ def main():
     figure_burst_same_mean()
     figure_general_service_robustness()
     figure_robotics_case_study()
+    figure_capacity_aware_policy()
     counterexample_table()
     fanout_validation()
     exact_simulation_validation()

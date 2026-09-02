@@ -183,6 +183,9 @@ s^*(M)=\arg\max_s r(s)Q_M(\nu(s),D),
 \end{equation}
 so the system-optimal referral threshold need not maximize recall or any detector-only score.
 
+\textbf{Proposition 2 (interior capacity-aware threshold).}
+Let \(\tau\) be a continuous detector threshold with \(r(\tau),f(\tau)\to1\) as \(\tau\to-\infty\) and \(r(\tau),f(\tau)\to0\) as \(\tau\to\infty\). Extend \(C(\tau)=0\) whenever \(\nu(\tau)\ge M\mu\). If fully permissive referral overloads the pool, \(\Lambda\ge M\mu\), and there exists a finite threshold with \(0<r(\tau)\) and \(\nu(\tau)<M\mu\), then \(C(\tau)\) attains a positive maximum at a finite interior threshold. Indeed, \(C\to0\) at both extreme thresholds while it is positive at the feasible intermediate point. Thus under overload, neither maximum-recall referral nor never-referring can be system-optimal.
+
 \subsection{Rare-event scaling}
 
 \textbf{Corollary 2 (rare-event false-positive scaling).}
@@ -202,7 +205,7 @@ which diverges as \(\pi\to0\) for fixed \(f>0\): nuisance alerts can dominate su
 
 \subsection{Correlated demand}
 
-\textbf{Proposition 2 (average-load insufficiency).}
+\textbf{Proposition 3 (average-load insufficiency).}
 Let \(b\) exchangeable alerts arrive simultaneously to \(M\) initially idle exponential servers. For a uniformly selected batch alert,
 \begin{equation}
 \boxed{
@@ -243,9 +246,9 @@ Ours & critical-event end-to-end deadline guarantee & $\checkmark$ & $\checkmark
 \end{tabular}
 \end{table}
 
-\subsection{Empirically anchored multi-robot case study}
+\subsection{Literature-anchored supervisory timing envelope}
 
-Al-Hussaini et al. study a human supervisor making repeated tasking decisions in simulated multi-robot search-and-rescue missions \cite{alhussaini2024alerts}. Their missions take 15--20 minutes, contain ten or more decision instances, and use a 90-s preferred decision limit. The lower-envelope workload implied by ten decisions is therefore approximately 30--40 decisions/h. The study does not report a reusable mean human service time, so we do not invent one; instead, Fig.~\ref{fig:case} asks what service time would be compatible with a 95\% deadline-completion target.
+Al-Hussaini et al. study a human supervisor making repeated tasking decisions in simulated multi-robot search-and-rescue missions \cite{alhussaini2024alerts}. Their missions take about 15--20 minutes, contain approximately 10--15 decision instances, and provide asynchronous robot updates every 1--2 minutes; participants are asked to make retasking decisions preferably within 90 s. These decision instances are not selective referrals in the sense of our model. We therefore use the observed cadence only as an \emph{all-review supervisory-demand envelope}, not as an estimate of the referral arrival rate \(\nu\). Fig.~\ref{fig:case} asks what mean service time would be compatible with a 95\% deadline-completion target if all such decision instances required human review.
 
 \begin{figure}[t]
     \centering
@@ -253,7 +256,7 @@ Al-Hussaini et al. study a human supervisor making repeated tasking decisions in
     \caption{One-operator timing envelope using the 90-s decision deadline and the lower-envelope decision rates implied by \cite{alhussaini2024alerts}. The 60/h line is a denser stress case, not an empirical estimate.}
     \label{fig:case}
 \end{figure}
-Under the exponential baseline, a 95\% service level allows a mean review time of only about 24.0 s at 30 decisions/h and 22.5 s at 40 decisions/h (20.0 s at the 60/h stress rate). This is not a fit to the participants in \cite{alhussaini2024alerts}; it is a concrete design reading of their observed mission cadence and deadline.
+Under the exponential baseline, a 95\% service level allows a mean review time of only about 24.0 s at 30 decisions/h and 22.5 s at 40 decisions/h (20.0 s at the 60/h stress rate). This is deliberately not a fit to the participants or alert process in \cite{alhussaini2024alerts}; it is a timing-envelope calculation using only their observed mission cadence and stated decision deadline.
 
 \subsection{Deadline-aware feasibility}
 
@@ -270,7 +273,7 @@ At normalized deadline \(d=4\), the largest offered loads meeting the target are
 \begin{figure}[t]
     \centering
     \includegraphics[width=\columnwidth]{../results/figures/icra/fig2_oversight_paradox.pdf}
-    \caption{Oversight Paradox along a synthetic binormal ROC (\(d'=3\), \(\pi=10^{-3}\), \(d=4\)). The EHC-maximizing operating point depends on supervisory capacity.}
+    \caption{Oversight Paradox along a synthetic binormal ROC (\(d'=3\), \(\pi=10^{-3}\), pre-referral load \(L=\Lambda E[S]=20\), \(d=4\), \(h=a=1\)). The system-optimal operating point depends on supervisory capacity.}
     \label{fig:paradox}
 \end{figure}
 With the same detector and pre-escalation workload, the EHC-maximizing TPR rises from about 0.91 with two operators to 0.97 with four and 0.99 with eight. Thus the operating point that is best for the detector in isolation is not generally best for the supervisory architecture.
@@ -305,6 +308,26 @@ Across these service families, batch-8 completion remains roughly 0.78--0.82 whi
 
 \textbf{Mechanism checks.} The ablations behave as the theory predicts. At stable load \(A=0.9\) with one operator, finite \(d=4\) gives \(Q=0.330\), whereas removing the deadline gives eventual completion probability one. At \(N=10{,}000\), otherwise fixed parameters require 2 operators when \(f=0\) but 22 when \(f=0.01\). Finally, keeping \(A=1.2\) and \(M=3\) fixed changes completion from 0.979 under Poisson arrivals to 0.796 under batch-8 arrivals.
 
+\subsection{Frontier-derived supervisory mitigation}
+
+The frontier suggests two direct mitigations when demand approaches human capacity. First, a referred alert can be served by descending detector risk score rather than FCFS. Second, the referral threshold can react to queue congestion. We instantiate a simple \emph{queue-aware referral} (QAR) rule
+\begin{equation}
+\tau(q)=\tau_0+\gamma[q-M]_+,
+\label{eq:qar}
+\end{equation}
+where \(q\) is the number of outstanding alerts. The threshold therefore becomes more selective only after all operators are occupied and a queue forms.
+
+We test QAR on synthetic two-state MMPP candidate streams with \(\pi=.01\), \(d'=3\), \(M=2\), \(d=4\), and exponential mean-one service. Policy parameters are selected once on three development seeds at candidate load \(L=14\), then frozen and evaluated on held-out streams across varying load.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\columnwidth]{../results/figures/icra/fig7_capacity_aware_policy.pdf}
+    \caption{Capacity-aware mitigation under bursty candidate demand. Risk-score priority protects high-score referrals; QAR adapts the referral threshold only when a queue forms. Parameters are tuned at \(L=14\) on separate development seeds and frozen for evaluation.}
+    \label{fig:policy}
+\end{figure}
+
+At \(L=18\), fixed-threshold FCFS achieves about 0.79 timely control, QAR about 0.84, risk-priority about 0.86, and QAR plus risk-priority about 0.87. QAR also limits backlog: when combined with priority it reduces average queue size by roughly fourfold relative to fixed-threshold risk-priority while slightly improving timely control. The policy is deliberately simple; its role is to show that the feasibility analysis yields an actionable supervisory design lever rather than only a post-hoc diagnostic.
+
 \begin{table}[t]
 \centering
 \caption{Examples where a conventional criterion passes but a 95\% end-to-end deadline target fails. The baseline criteria are not incorrect; they certify weaker properties.}
@@ -335,7 +358,7 @@ As an interpretation of the dimensionless axes, \(d=4\) simply means that the in
 \section{Discussion and Limitations}
 \label{sec:discussion}
 
-The framework provides structural feasibility guarantees, not a universal cognitive model. Human correctness \(h\), intervention success \(a\), service-time distributions, event prevalence, and burst structure are application-specific and must ultimately be measured in the operational design domain. We also assume identical baseline service-time distributions for genuine and nuisance alerts and workload-independent \(h\); class-dependent service, alert fatigue, and priority scheduling are natural extensions. If correctness deteriorates with workload, congestion effects become stronger rather than weaker.
+The framework provides structural feasibility guarantees, not a universal cognitive model. Human correctness \(h\), intervention success \(a\), service-time distributions, event prevalence, and burst structure are application-specific and must ultimately be measured in the operational design domain. We also assume identical baseline service-time distributions for genuine and nuisance alerts and workload-independent \(h\). The analytical FCFS model is a transparent baseline rather than a prescription: Fig.~\ref{fig:policy} shows that risk-priority and queue-aware referral can materially improve critical-event service, while the service-time ceiling and detector/base-rate constraints remain. Class-dependent service and alert-fatigue models are further extensions. If correctness deteriorates with workload, congestion effects become stronger rather than weaker.
 
 The analytical M/M/\(M\) assumptions provide closed forms, while the simulation stress tests relax both Poisson arrivals and exponential service. The guarantee should therefore be read as an architecture-level assurance target whose parameters must be calibrated for the intended operating domain, not as a universal staffing recommendation.
 
@@ -343,7 +366,7 @@ The practical implication is a co-design rule: fleet scale, referral threshold, 
 
 \section{Conclusion}
 
-A right or interface to intervene is not equivalent to an ability to intervene. Effective human control depends jointly on warning quality, scale, human capacity, deadlines, and temporal correlation.
+A right or interface to intervene is not equivalent to an ability to intervene. Timely human control depends jointly on referral quality, scale, human capacity, deadlines, and temporal correlation. The feasibility frontier exposes these couplings and supports capacity-aware referral and scheduling policies rather than treating the human channel as an unconstrained fallback.
 
 \section*{Acknowledgments}
 OpenAI ChatGPT (GPT-5.6 Sol) was used to assist with drafting and editing prose in Sections I--VII, organizing literature searches for Section II, and drafting simulation and plotting code underlying Section V. The authors verified the mathematical derivations, cited references, executable code, numerical results, and final manuscript.
