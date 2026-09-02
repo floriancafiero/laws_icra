@@ -46,59 +46,127 @@ plt.rcParams.update({
 
 
 def figure_architecture():
-    """Black-and-white end-to-end system schematic for the ICRA paper."""
-    fig, ax = plt.subplots(figsize=(7.1, 1.75))
-    ax.set_xlim(-0.015, 1.015)
+    """Clean two-row end-to-end architecture for the ICRA paper."""
+    fig, ax = plt.subplots(figsize=(14.4, 5.4))
+    fig.patch.set_facecolor("white")
+    ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
     ax.axis("off")
 
-    def box(x, y, w, h, label, *, dashed=False, fontsize=7.5):
+    box_lw = 1.5
+    arrow_lw = 1.35
+    rounding = 0.018
+    font_main = 16
+    font_fail = 13.8
+
+    def add_box(x, y, w, h, text, *, dashed=False, fontsize=font_main):
         patch = FancyBboxPatch(
             (x, y), w, h,
-            boxstyle="round,pad=0.012,rounding_size=0.015",
+            boxstyle=f"round,pad=0.010,rounding_size={rounding}",
             facecolor="white",
             edgecolor="black",
-            linewidth=0.9,
+            linewidth=box_lw,
             linestyle="--" if dashed else "-",
         )
         ax.add_patch(patch)
-        ax.text(x + w / 2, y + h / 2, label, ha="center", va="center",
-                fontsize=fontsize)
-        return (x, y, w, h)
+        ax.text(
+            x + w / 2, y + h / 2, text,
+            ha="center", va="center", fontsize=fontsize
+        )
+        return {"x": x, "y": y, "w": w, "h": h}
 
-    def arrow(x1, y1, x2, y2, label=None, yoff=0.035):
+    def left(b):
+        return (b["x"], b["y"] + b["h"] / 2)
+
+    def right(b):
+        return (b["x"] + b["w"], b["y"] + b["h"] / 2)
+
+    def draw_arrow(p1, p2, ms=18):
         ax.add_patch(FancyArrowPatch(
-            (x1, y1), (x2, y2),
-            arrowstyle="-|>", mutation_scale=9, linewidth=0.9, color="black"
+            p1, p2,
+            arrowstyle="-|>",
+            mutation_scale=ms,
+            linewidth=arrow_lw,
+            color="black",
+            shrinkA=0,
+            shrinkB=0,
         ))
-        if label:
-            ax.text((x1+x2)/2, (y1+y2)/2 + yoff, label,
-                    ha="center", va="bottom", fontsize=6.8)
 
-    b1=box(0.01,0.48,0.12,0.28,"Fleet\n$N$ robots")
-    b2=box(0.17,0.48,0.16,0.28,"Candidate situations\n$\\Lambda=N\\lambda$;  $P(Z=1)=\\pi$")
-    b3=box(0.37,0.48,0.15,0.28,"Referral mechanism\nTPR $r$; FPR $f$")
-    b4=box(0.59,0.48,0.13,0.28,"Human pool\n$M$ operators\nwait $W$, service $S$")
-    b5=box(0.77,0.48,0.12,0.28,"Timely review\n$W+S\\leq D$\ncorrectness $h$")
-    b6=box(0.93,0.48,0.06,0.28,"Act\n$a$\n$C$")
+    def h_arrow(b1, b2, gap=0.008):
+        x1, y1 = right(b1)
+        x2, y2 = left(b2)
+        draw_arrow((x1 + gap, y1), (x2 - gap, y2))
 
-    arrow(0.13,0.62,0.17,0.62)
-    arrow(0.33,0.62,0.37,0.62)
-    arrow(0.52,0.62,0.59,0.62)
-    arrow(0.72,0.62,0.77,0.62)
-    arrow(0.89,0.62,0.93,0.62)
+    h = 0.17
+    w_main = 0.18
 
-    box(0.39,0.08,0.11,0.20,"Missed critical\n$1-r$",dashed=True,fontsize=7)
-    box(0.75,0.08,0.16,0.20,"No timely effective control\n$W+S>D$ or incorrect",dashed=True,fontsize=7)
-    arrow(0.445,0.48,0.445,0.28)
-    arrow(0.83,0.48,0.83,0.28)
+    # Top row: referral branch and missed-critical outcome stay on one line.
+    b1 = add_box(0.03, 0.74, w_main, h, "Fleet\n$N$ robots")
+    b2 = add_box(
+        0.26, 0.74, w_main, h,
+        "Candidate situations\n$\\Lambda = N\\lambda$\n$P(Z=1)=\\pi$"
+    )
+    b3 = add_box(
+        0.49, 0.74, w_main, h,
+        "Referral mechanism\nTPR $r$; FPR $f$"
+    )
+    f1 = add_box(
+        0.82, 0.74, 0.14, h,
+        "Missed critical\n$1-r$",
+        dashed=True, fontsize=font_fail
+    )
 
-    ax.text(0.555,0.82,"$\\nu=\\Lambda[\\pi r+(1-\\pi)f]$",
-            ha="center",va="center",fontsize=8)
+    # Second row: supervisory service chain.
+    b4 = add_box(
+        0.16, 0.38, 0.18, h,
+        "Human pool\n$M$ operators\nwait $W$, service $S$"
+    )
+    b5 = add_box(
+        0.42, 0.38, 0.23, h,
+        "Timely review\n$W + S \\leq D$\ncorrectness $h$"
+    )
+    b6 = add_box(
+        0.75, 0.38, 0.13, h,
+        "Act\n$a$\n$C$"
+    )
+
+    # Bottom failure outcome.
+    f2 = add_box(
+        0.35, 0.08, 0.26, 0.12,
+        "No timely effective control\n$W + S > D$ or incorrect",
+        dashed=True, fontsize=font_fail
+    )
+
+    # Main top-row flow.
+    h_arrow(b1, b2)
+    h_arrow(b2, b3)
+    h_arrow(b3, f1)
+
+    # Referral -> human pool: clean elbow connector below the top row.
+    start_x = b3["x"] + b3["w"] * 0.52
+    start_y = b3["y"] - 0.008
+    mid_y = 0.64
+    human_x = b4["x"] + b4["w"] / 2
+    human_top_y = b4["y"] + b4["h"] + 0.008
+    ax.plot([start_x, start_x], [start_y, mid_y], color="black", lw=arrow_lw)
+    ax.plot([start_x, human_x], [mid_y, mid_y], color="black", lw=arrow_lw)
+    draw_arrow((human_x, mid_y), (human_x, human_top_y))
+
+    # Main second-row flow.
+    h_arrow(b4, b5)
+    h_arrow(b5, b6)
+
+    # Timely review -> unsuccessful-control outcome.
+    draw_arrow(
+        (b5["x"] + b5["w"] * 0.40, b5["y"] - 0.008),
+        (f2["x"] + f2["w"] / 2, f2["y"] + f2["h"] + 0.008),
+    )
+
     fig.tight_layout(pad=0.15)
-    fig.savefig(FIG / "fig0_architecture.pdf")
-    fig.savefig(FIG / "fig0_architecture.svg")
+    fig.savefig(FIG / "fig0_architecture.pdf", bbox_inches="tight", pad_inches=0.03)
+    fig.savefig(FIG / "fig0_architecture.svg", bbox_inches="tight", pad_inches=0.03)
     plt.close(fig)
+
 
 def q_dimless(A: float, M: int, d: float) -> float:
     """M/M/M deadline-completion probability with mean service normalized to 1."""
