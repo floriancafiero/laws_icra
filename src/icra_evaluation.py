@@ -206,7 +206,7 @@ def figure_oversight_paradox():
         best = sub.loc[sub["EHC"].idxmax()]
         plt.scatter([best["TPR"]], [best["EHC"]], s=28)
     plt.xlabel("Escalation sensitivity / TPR")
-    plt.ylabel("End-to-end timely-control probability")
+    plt.ylabel(r"End-to-end timely-control probability $C$")
     plt.xlim(0.75, 1.005)
     plt.ylim(0, 1)
     plt.legend()
@@ -406,7 +406,7 @@ def figure_burst_same_mean():
     plt.bar(x, df["Q_mean"], yerr=ci, capsize=2)
     plt.axhline(TARGET, linestyle="--", linewidth=0.8, label="95% target")
     plt.xticks(x, ["Pois.", "B2", "B4", "B8", "MMPP"])
-    plt.ylabel("Deadline completion probability")
+    plt.ylabel(r"Deadline completion probability $Q$")
     plt.ylim(0, 1)
     plt.legend(loc="lower left")
     plt.tight_layout(pad=0.3)
@@ -455,7 +455,7 @@ def figure_general_service_robustness():
     for offset, process in zip([-width, 0, width], ["poisson", "batch4", "batch8"]):
         plt.bar(x + offset, pivot[process], width, label=process)
     plt.xticks(x, pivot.index, rotation=18, ha="right")
-    plt.ylabel("P(alert completed before deadline)")
+    plt.ylabel(r"Deadline completion probability $Q$")
     plt.ylim(0, 1)
     plt.legend()
     plt.tight_layout(pad=0.3)
@@ -682,7 +682,7 @@ def figure_robotics_case_study():
 
     plt.axhline(TARGET, linestyle="--", linewidth=0.8, label="95% target")
     plt.xlabel("Mean human review time (s)")
-    plt.ylabel("Deadline completion probability")
+    plt.ylabel(r"Deadline completion probability $Q$")
     plt.ylim(0, 1.01)
     plt.legend()
     plt.tight_layout(pad=0.3)
@@ -709,7 +709,7 @@ def simulate_scored_supervision(
     warmup=4000,
     seed=1,
 ):
-    """Simulate score-based referral with FCFS or risk-priority human service."""
+    """Simulate score-based referral with FCFS or detector-score-priority human service."""
     rng = np.random.default_rng(seed)
     total = n + warmup
     arrivals = generate_arrivals("mmpp", candidate_load, total, rng)
@@ -845,9 +845,9 @@ def figure_capacity_aware_policy():
     """Compare static and capacity-aware supervisory policies on held-out streams."""
     policy_specs = [
         ("Fixed + FCFS", "fcfs", False),
-        ("Risk priority", "risk", False),
+        ("Score priority", "risk", False),
         ("QAR", "fcfs", True),
-        ("QAR + priority", "risk", True),
+        ("QAR + score priority", "risk", True),
     ]
 
     tuned = {}
@@ -907,7 +907,7 @@ def figure_capacity_aware_policy():
         sub = df[df["policy"] == name]
         plt.plot(sub["candidate_load_L"], sub["C"], marker="o", markersize=2.8, label=name)
     plt.xlabel(r"Pre-referral candidate load $L=\Lambda E[S]$")
-    plt.ylabel("End-to-end timely-control probability")
+    plt.ylabel(r"End-to-end timely-control probability $C$")
     plt.ylim(0.65, 1.0)
     plt.legend(fontsize=6.2)
     plt.tight_layout(pad=0.3)
