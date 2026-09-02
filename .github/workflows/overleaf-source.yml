@@ -15,6 +15,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install evaluation dependencies
+        run: pip install -r requirements.txt
+
+      - name: Regenerate submission figures
+        run: python src/icra_evaluation.py
+
       - name: Fetch official PaperPlaza ieeeconf class
         run: |
           curl -fsSL https://ras.papercept.net/conferences/support/files/ieeeconf.zip -o /tmp/ieeeconf.zip
