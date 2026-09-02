@@ -72,7 +72,7 @@ Main text contains theorem statements and proof intuition:
 4. rare-event false-positive staffing law;
 5. average-load insufficiency.
 
-Full proofs go to supplementary material.
+Because ICRA 2027 permits no separate supplementary manuscript, the essential proof arguments must appear inside the 8-page submission. `SUPPLEMENT_PROOFS.md` is an internal author notebook only.
 
 ### 5. Evaluation — ~2.2 pages
 
@@ -112,15 +112,7 @@ Do not exceed five principal result figures.
 
 A system architecture diagram can be compactly integrated into Figure 1 or the model section.
 
-Move to supplementary:
-
-- extra ROC discriminabilities;
-- service-distribution variants;
-- extra base rates;
-- detailed empirical calibration;
-- full proofs;
-- priority-scheduling experiments;
-- pilot prototype.
+Material that does not fit the 8-page paper stays in the reproducibility repository, but the paper itself must be self-contained. Keep only the strongest ROC robustness, service-distribution robustness, and proof sketches in the paper; the pilot prototype is future work.
 
 ## Required baselines
 
@@ -171,3 +163,30 @@ Show exact fan-out recovery, then demonstrate deadline, false-alert, and burst c
 4. Draft manuscript around results, not around policy.
 5. Run hostile-review pass.
 6. Only then polish supplementary material and repository.
+
+
+## ICRA 2027 hard format constraints
+
+Current official call:
+
+- complete submission: **8 pages maximum including references**;
+- IEEE/ICRA double-column format;
+- double-anonymous review;
+- no separate supplementary manuscript/attachment;
+- optional accompanying video only.
+
+Practical page budget target:
+
+| component | target pages |
+|---|---:|
+| Abstract + Introduction + contributions | 0.9 |
+| Related work / positioning | 0.7 |
+| Model | 1.0 |
+| Theory + proof sketches | 1.4 |
+| Evaluation | 2.3 |
+| Robotics interpretation + discussion + limitations | 0.7 |
+| Conclusion | 0.2 |
+| References | 0.8 |
+| **Total** | **8.0** |
+
+If theory expands, reduce prose or merge figures before cutting the evaluation.

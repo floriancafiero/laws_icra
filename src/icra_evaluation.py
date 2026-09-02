@@ -93,6 +93,7 @@ def figure_feasibility():
     plt.title("Deadline-aware human-control capacity")
     plt.legend(ncol=2, fontsize=8)
     plt.tight_layout()
+    plt.savefig(FIG / "fig1_feasibility_frontier.pdf")
     plt.savefig(FIG / "fig1_feasibility_frontier.svg")
     plt.close()
     return df
@@ -142,6 +143,7 @@ def figure_oversight_paradox():
     plt.title("More escalation is not always more human control")
     plt.legend()
     plt.tight_layout()
+    plt.savefig(FIG / "fig2_oversight_paradox.pdf")
     plt.savefig(FIG / "fig2_oversight_paradox.svg")
     plt.close()
 
@@ -212,6 +214,7 @@ def figure_false_positive_scaling():
     plt.title("False-positive rate determines first-order staffing at scale")
     plt.legend()
     plt.tight_layout()
+    plt.savefig(FIG / "fig3_false_positive_scaling.pdf")
     plt.savefig(FIG / "fig3_false_positive_scaling.svg")
     plt.close()
     return df
@@ -334,6 +337,7 @@ def figure_burst_same_mean():
     plt.ylim(0, 1)
     plt.title("Same mean utilization, different human-control performance")
     plt.tight_layout()
+    plt.savefig(FIG / "fig4_same_mean_burst.pdf")
     plt.savefig(FIG / "fig4_same_mean_burst.svg")
     plt.close()
     return df
@@ -383,6 +387,7 @@ def figure_general_service_robustness():
     plt.title("Burst penalty persists beyond exponential service")
     plt.legend()
     plt.tight_layout()
+    plt.savefig(FIG / "fig5_service_robustness.pdf")
     plt.savefig(FIG / "fig5_service_robustness.svg")
     plt.close()
     return df
