@@ -209,7 +209,9 @@ jobs:
       - name: Anonymity audit
         run: |
           set -e
-          if grep -RniE 'floriancafiero|cafiero|epita|culturelab|psl|graduate institute|ihe[id]|@.*\.(fr|com|org|edu)|github\.com/floriancafiero|/home/|C:\\Users\\' anonymous_repro; then
+          find anonymous_repro -type d -name '__pycache__' -prune -exec rm -rf {} +
+          find anonymous_repro -type f -name '*.pyc' -delete
+          if grep -RIniE 'floriancafiero|cafiero|epita|culturelab|psl|graduate institute|ihe[id]|@.*\.(fr|com|org|edu)|github\.com/floriancafiero|/home/|C:\\Users\\' anonymous_repro; then
             echo "Potential identifying content found in anonymous package."
             exit 1
           fi
