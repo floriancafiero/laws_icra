@@ -31,6 +31,7 @@ FIG.mkdir(parents=True, exist_ok=True)
 TAB.mkdir(parents=True, exist_ok=True)
 
 SEED = 20260902
+# Policy tuning uses SEED+101..103; held-out evaluation uses SEED+500..504.
 TARGET = 0.95
 
 # IEEE single-column figures: generate at final physical width so fonts remain legible.
