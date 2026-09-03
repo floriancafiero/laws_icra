@@ -1,0 +1,227 @@
+name: Anonymous reproducibility bundle
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/icra_evaluation.py"
+      - "src/simulations.py"
+      - "tests/test_theory.py"
+      - "requirements.txt"
+      - ".github/workflows/anonymous-reproducibility.yml"
+  workflow_dispatch:
+
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Verify theory and regenerate results
+        run: |
+          python -m unittest tests/test_theory.py
+          python src/icra_evaluation.py
+
+      - name: Assemble anonymous reproducibility package
+        run: |
+          rm -rf anonymous_repro
+          mkdir -p anonymous_repro/src anonymous_repro/tests
+          mkdir -p anonymous_repro/results/tables/icra
+          mkdir -p anonymous_repro/results/figures/icra
+
+          cp src/icra_evaluation.py anonymous_repro/src/
+          cp src/simulations.py anonymous_repro/src/
+          cp tests/test_theory.py anonymous_repro/tests/
+          cp results/tables/icra/*.csv anonymous_repro/results/tables/icra/
+          cp results/figures/icra/*.pdf anonymous_repro/results/figures/icra/
+
+          cat > anonymous_repro/requirements.txt <<'EOF'
+          numpy>=2.0
+          pandas>=2.2
+          matplotlib>=3.9
+          scipy>=1.14
+          EOF
+
+          python -m pip freeze > anonymous_repro/requirements-lock.txt
+
+          cat > anonymous_repro/Makefile <<'EOF'
+          .PHONY: reproduce check all clean
+
+          reproduce:
+          	python src/icra_evaluation.py
+
+          check:
+          	python -m unittest tests/test_theory.py
+
+          all: check reproduce
+
+          clean:
+          	rm -rf results/figures/icra results/tables/icra
+          EOF
+
+          cat > anonymous_repro/README.md <<'EOF'
+          # Anonymous reproducibility package
+
+          This repository contains the code and numerical outputs used for the analytical
+          calculations, simulation studies, policy evaluation, and figure generation in
+          the submitted manuscript.
+
+          The package is intentionally self-contained and contains no external datasets.
+          All deployment-scale examples are synthetic or literature-anchored calculations;
+          no human-subject data are used.
+
+          ## Contents
+
+          - `src/simulations.py`: exact M/M/M deadline-completion utilities and supporting
+            queue calculations.
+          - `src/icra_evaluation.py`: the complete submission evaluation suite. It
+            regenerates the analytical frontiers, detector/capacity experiment,
+            false-positive scaling results, burst and service-distribution stress tests,
+            literature-anchored timing envelope, queue-aware referral experiment, baseline
+            comparisons, and validation tables.
+          - `tests/test_theory.py`: sanity checks for the exact queue formula,
+            monotonicity, service-time ceiling, known feasibility point, asymptotic safety
+            margin, and classical fan-out identity.
+          - `results/tables/icra/`: CSV outputs used to check the reported numerical
+            values.
+          - `results/figures/icra/`: regenerated PDF figures.
+          - `requirements.txt`: minimal runtime dependencies.
+          - `requirements-lock.txt`: exact Python package versions used by the automated
+            reproducibility build.
+
+          ## Quick start
+
+          Python 3.12 is used by the automated build.
+
+          ```bash
+          python -m venv .venv
+          source .venv/bin/activate
+          # Windows: .venv\Scripts\activate
+
+          pip install -r requirements.txt
+          make all
+          ```
+
+          Equivalent commands are:
+
+          ```bash
+          python -m unittest tests/test_theory.py
+          python src/icra_evaluation.py
+          ```
+
+          Outputs are written to:
+
+          ```text
+          results/figures/icra/
+          results/tables/icra/
+          ```
+
+          ## Reproduced experiments
+
+          The evaluation script reproduces:
+
+          1. the deadline-aware feasibility frontier;
+          2. the detector/supervisory-capacity trade-off and Oversight Paradox;
+          3. false-positive staffing scaling;
+          4. equal-mean-load burst robustness;
+          5. robustness to non-exponential service distributions;
+          6. the literature-anchored supervisory timing envelope;
+          7. queue-aware referral and detector-score scheduling;
+          8. the classical fan-out special-case calculation;
+          9. discrete-event validation against the exact M/M/M expression;
+          10. compact mechanism ablations and counterexamples.
+
+          ## Random seeds and held-out policy evaluation
+
+          All stochastic experiments are deterministic given the seeds in
+          `src/icra_evaluation.py`.
+
+          The queue-aware referral experiment uses a strict development/evaluation split:
+
+          - development seeds: `SEED + 101`, `SEED + 102`, `SEED + 103`;
+          - held-out evaluation seeds: `SEED + 500` through `SEED + 504`.
+
+          Policy thresholds and queue-response parameters are selected only on the three
+          development seeds at candidate load L=14. The selected parameters are then
+          frozen before the five held-out seeds are evaluated over all reported loads.
+          The two seed sets are disjoint.
+
+          The full tuning grid is saved as
+          `results/tables/icra/policy_tuning_development.csv`; held-out policy results
+          are saved as `results/tables/icra/fig7_capacity_aware_policy.csv`.
+
+          ## Numerical validation
+
+          `results/tables/icra/simulation_exact_validation.csv` compares the
+          discrete-event engine with the exact M/M/M deadline-completion probability at
+          four operating points.
+
+          `results/tables/icra/ablation_summary.csv` records the finite-deadline,
+          false-positive, arrival-correlation, and supervisory-capacity mechanism checks.
+
+          ## Scope
+
+          The analytical baseline uses Poisson arrivals and exponential service where the
+          closed form is invoked. The simulation stress tests separately relax arrival
+          independence and service-time assumptions. Large-fleet examples are scaling
+          stress tests rather than claims about typical present-day deployments.
+          EOF
+
+          cat > anonymous_repro/REPRODUCE.md <<'EOF'
+          # Reproduction map
+
+          Run `make all` from the repository root.
+
+          The principal generated files are:
+
+          | Output | Generated by | Purpose |
+          |---|---|---|
+          | `fig1_feasibility_frontier.csv` | `figure_feasibility` | deadline-aware capacity frontier |
+          | `fig2_oversight_paradox.csv` | `figure_oversight_paradox` | detector/capacity co-design |
+          | `fig3_false_positive_scaling.csv` | `figure_false_positive_scaling` | staffing scaling |
+          | `fig4_same_mean_burst.csv` | `figure_burst_same_mean` | correlated-demand stress test |
+          | `fig5_service_robustness.csv` | `figure_general_service_robustness` | service-distribution robustness |
+          | `fig6_robotics_case_study.csv` | `figure_robotics_case_study` | literature-anchored timing envelope |
+          | `policy_tuning_development.csv` | `_tune_supervisory_policy` | development-only tuning grid |
+          | `fig7_capacity_aware_policy.csv` | `figure_capacity_aware_policy` | held-out supervisory-policy evaluation |
+          | `fanout_recovery.csv` | `fanout_validation` | classical fan-out identity |
+          | `simulation_exact_validation.csv` | `exact_simulation_validation` | simulator vs. exact M/M/M |
+          | `counterexample_baselines.csv` | `counterexample_table` | baseline counterexamples |
+          | `ablation_summary.csv` | `ablation_summary` | mechanism checks |
+
+          Regeneration overwrites the CSV/PDF files in `results/` deterministically
+          except for Monte Carlo sampling, which is itself fixed by explicit seeds.
+          EOF
+
+      - name: Verify package in isolation
+        run: |
+          cd anonymous_repro
+          python -m unittest tests/test_theory.py
+          python src/icra_evaluation.py
+
+      - name: Anonymity audit
+        run: |
+          set -e
+          if grep -RniE 'floriancafiero|cafiero|epita|culturelab|psl|graduate institute|ihe[id]|@.*\.(fr|com|org|edu)|github\.com/floriancafiero|/home/|C:\\Users\\' anonymous_repro; then
+            echo "Potential identifying content found in anonymous package."
+            exit 1
+          fi
+          test ! -d anonymous_repro/.git
+
+      - name: Create root-level ZIP
+        run: |
+          cd anonymous_repro
+          zip -qr ../anonymous_reproducibility.zip .
+
+      - name: Upload anonymous reproducibility bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: icra-anonymous-reproducibility
+          path: anonymous_reproducibility.zip
